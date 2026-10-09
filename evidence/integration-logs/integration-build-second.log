@@ -1,0 +1,18 @@
+✔ [9162/9517] Built NavierStokes.SlotGeometry (2.3s)
+✔ [9163/9517] Built NavierStokes.SlotColoring (2.6s)
+✔ [9164/9517] Built NavierStokes.LabelCountingFinite (2.4s)
+✖ [9165/9517] Building NavierStokes.ChartScales (2.6s)
+trace: .> LEAN_PATH=/workspace/integration/repo/.lake/packages/Cli/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/batteries/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/Qq/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/aesop/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/proofwidgets/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/importGraph/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/plausible/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/lean4export/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/mathlib/.lake/build/lib/lean:/workspace/integration/repo/.lake/packages/Comparator/.lake/build/lib/lean:/workspace/integration/repo/.lake/build/lib/lean /workspace/integration/lean-4.34.0-rc2-linux/bin/lean /workspace/integration/repo/NavierStokes/ChartScales.lean -o /workspace/integration/repo/.lake/build/lib/lean/NavierStokes/ChartScales.olean -i /workspace/integration/repo/.lake/build/lib/lean/NavierStokes/ChartScales.ilean -c /workspace/integration/repo/.lake/build/ir/NavierStokes/ChartScales.c --setup /workspace/integration/repo/.lake/build/ir/NavierStokes/ChartScales.setup.json --json
+error: NavierStokes/ChartScales.lean:77:2: linarith failed to find a contradiction
+he : Tg < Lambda ^ 2
+hl : Real.log Tg < ↑2 * Real.log Lambda
+a✝ : Real.log Lambda ≤ 1 / 2 * Real.log Tg
+⊢ False
+failed
+✔ [9188/9517] Built NavierStokes.CommonCoverSolve (5.3s)
+✔ [9321/9517] Built NavierStokes.TorusCoverLattice (2.4s)
+✔ [9322/9517] Built NavierStokes.NormalScaling (2.5s)
+✔ [9515/9517] Built NavierStokes.TorusCoverDegree (2.3s)
+Some required targets logged failures:
+- NavierStokes.ChartScales
+error: build failed

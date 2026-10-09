@@ -1,0 +1,22 @@
+{
+  "NavierStokes/ActualSignedGeometry.lean": "fc4fc585a791a685dc98dec4d1d97026bc74ee5f85af16c3a387fdc32055fd75",
+  "NavierStokes/ActualSignedNativeBounds.lean": "943362148024ad73041848442d608129275d41a28f47f0e58576d66c5e2631bd",
+  "NavierStokes/ChartScales.lean": "832fc2aa81e92a116f10e9f089633bcbd5da073e54045b7af557f607314fadca",
+  "NavierStokes/CommonCoverClass.lean": "c053100694f2598d898730ea65c3a40870f5dbbc3025b524ce7d412f1abbc7bd",
+  "NavierStokes/CommonCoverSolve.lean": "b5457e1ee66e3b268f8e0f05e4f825f3cf4739bafaa11136eeacf928065f96e2",
+  "NavierStokes/CorrectionInitialization.lean": "3cca9cb8d96344116c5ea375a6fd3060b214534b205ab1b6a85aebdb810a6596",
+  "NavierStokes/CorrectionInitializationNoOptions.lean": "62924b7554f275f2e96d0f065130727816dcfecb9f5cf79e329d1798e8cd13ea",
+  "NavierStokes/DiophantineGraph.lean": "1aa0dfbc78879414e428c67f2d53a5a87158a604b38ac62c098797c4a208730e",
+  "NavierStokes/GoldenCoverLattice.lean": "7e30659f940b7491c19bd15b32bc71f298edadcaefe8185f4252f94190832de3",
+  "NavierStokes/GoldenDiophantineGraph.lean": "53aa5d98dbe382bed382d96fa84a7c6606737d287452320456bc471d496ab289",
+  "NavierStokes/GoldenEigenGeometry.lean": "cd3fb4d2a8bbf3601a4aeded8cadee097f2e9b1786bf34b999e98057b975e8d3",
+  "NavierStokes/PhysicalGraphBounds.lean": "e610d78d08d22174b6ca2e9417d0e2fd0149394442306dbb5bbb60d914d4d23d",
+  "NavierStokes/PrimaryFieldAssembly.lean": "49c2ec17438536da9ae8372a2c60fdc449898fd3866e8904487eb074417c4c89",
+  "NavierStokes/SlotColoring.lean": "ba8ac2403528ba292b003f0576cdd6e1c3e786f4c88a44d7abb1190c7a727d25",
+  "NavierStokes/SlotGeometry.lean": "66e1ccd23f716b107125f1df36b5b970f72d7fb5d935ca66a0785d7757885840",
+  "NavierStokes/TemporalMeanUpdate.lean": "5be63b1334ec1a78239e86ed2e1ee7f3548925607ef90cd7760205ea87c438f5",
+  "NavierStokes/TorusAverages.lean": "bd3b67e013b76a80c1ba36ee4e07bf15c475e9018b991ca3c2d50d6f7a6e156b",
+  "NavierStokes/TorusCoverDegree.lean": "7c81a0872b25121ddae0fd2e536228071646bcfbd80047153d4eec940ab6fbff",
+  "NavierStokes/TorusCoverLattice.lean": "ec9135315e826b4c9b159f4b6ecb937356a59a9db54b3a22f2c27333f59cea6d",
+  "NavierStokes/TorusInverse.lean": "dc32486b1730d6d5f03d1d5a58a4403dddc3a1ea37413fdfd27c718bd3768dba"
+}

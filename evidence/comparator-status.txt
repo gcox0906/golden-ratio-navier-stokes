@@ -1,0 +1,72 @@
+GOLDEN NAVIER-STOKES — COMPARATOR AND NANODA VERIFIED
+
+Result
+Comparator completed successfully with exit code 0 using the repository's
+unchanged NavierStokes challenge and enable_nanoda=true.
+
+The two checked final theorems are:
+  NavierStokes.Comparator.navier_stokes_breakdown_R3
+  NavierStokes.Comparator.navier_stokes_breakdown_periodic
+
+Both exported final proofs were accepted by nanoda and by Lean's default kernel
+replay. Comparator also checked that their statements and dependent problem
+definitions match the trusted challenge, and checked the permitted axioms.
+The only permitted axioms were propext, Quot.sound, and Classical.choice.
+The trusted reference challenge deliberately has placeholder `sorry` proofs;
+its build warnings refer to those placeholders. The accepted solution export
+must satisfy the three-axiom whitelist, which excludes sorryAx.
+No theorem remains unverified among these two configured challenge targets.
+The independent check covers their dependent proof terms, rather than every
+unused theorem in the library. The earlier complete Lean library build is
+included in golden_integration_verified.zip (820 modules, 2469 audited declarations).
+
+The verification is for the repository's forced whole-space and periodic
+Navier-Stokes results using the golden auxiliary construction. The supplied
+challenge determines the exact mathematical statement being checked.
+
+Evidence
+The log records all three success messages:
+  nanoda kernel accepts the solution
+  Lean default kernel accepts the solution
+  Your solution is okay!
+The challenge module, configuration, and ComparatorDefinitions source hashes
+were identical before and after verification. All 20 golden source files match
+the previous verified integration exactly.
+
+Fresh checking environment
+The challenge was built and exported before the golden solution was built.
+Only the trusted public checker and Mathlib cache were prepared beforehand;
+the solution was not precompiled outside Comparator in this checkout.
+The verification process ran as UID 1001 with no effective capabilities.
+Landrun's filesystem-denial test passed; host Landlock ABI was 4.
+AF_UNIX socket creation was denied in the tested call by an inherited seccomp
+filter. The run used this filter in place of the systemd-run wrapper described
+in Comparator's documentation.
+The source checkout was read-only to the verifier; .lake build artifacts were writable.
+The pinned Lean toolchain itself was unmodified. A separate launcher set the
+Lean thread count for the sandboxed Lake builds.
+
+Pinned versions and provenance
+  Upstream base: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+  Mathlib: 85e3a25e006c35636f0e53b0e9296caca2685bc0
+  Comparator: 19e111e2141cf333c7daff0f64c5f24acc91dd2e
+  lean4export: cacf989bd75f608700820f6afc595f32e7a99a4d
+  landrun: 811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+  nanoda: 3a2407216ee84a75f9e1aead6803d0578be06ae7
+  Branch: codex/golden-comparator-verification
+  Checked UTC: 2026-10-09T00:08:59.163569+00:00
+Lean was 4.34.0-rc2, with the same Mathlib and Comparator pins as the original project.
+Exact binary hashes, input hashes, configuration, sandbox tests and logs appear
+in logs/comparator-manifest.json and the supporting log files.
+
+Reproduction
+The reproduction directory contains the setup, sandbox restriction, checker
+launcher, source payload, and result collector used for this run. On a fresh
+Ubuntu 24.04 Linux host, place those files under /workspace/comparator and run
+setup_comparator.sh as the setup administrator. That script creates an unprivileged
+verifier and runs the check there. It pins the landrun and nanoda commits above,
+Go 1.24.0, Rust 1.99.0, and the original project's locked Lean dependencies.
+The checker invocation is the repository's ComparatorChallenges/NavierStokes.json.
+
+No upstream default branch was modified and nothing was pushed or published.
+Cloud cleanup and cost estimates are recorded in logs/cloud-cleanup.txt.

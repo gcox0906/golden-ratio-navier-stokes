@@ -1,0 +1,20 @@
+Cloud verification cleanup — 2026-10-08
+
+First Stage 4 pod: vtu1ef1gm3ahtn
+Created 22:31:02 UTC; deleted and confirmed absent 22:41:04 UTC.
+Compute estimate at $0.32/hour: $0.0535.
+
+Integration pod: b2bmb555cuz8vf
+Created 22:47:50 UTC; deletion returned HTTP 204 at approximately 23:20:32 UTC.
+A subsequent get-pod returned HTTP 404 (pod not found).
+Compute estimate at $0.32/hour: $0.1744.
+
+Combined estimated compute: $0.2279 (about $0.23), plus storage.
+The billing API returned no posted records for either pod at the last check;
+these are runtime estimates, not a final invoice. The approved budget was $2.
+
+All build logs, exact source hashes, axiom/dependency audit output, corrected
+source files and reproduction scripts were saved locally before deletion.
+No network volume was created. The temporary local SSH key copy was removed.
+The local cost guard received its completion sentinel after successful deletion.
+No unrelated account resources were changed.

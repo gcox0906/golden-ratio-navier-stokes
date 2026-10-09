@@ -1,0 +1,10 @@
+The original Navier-Stokes construction and upstream Lean formalization are
+credited to OpenAI, https://github.com/openai/NavierStokesAndEuler.
+The original Apache-2.0 license is included as LICENSE. Original source
+comments and credits are retained. This package documents and supplies an
+alternative golden auxiliary covering, with 17 modified and 3 added modules;
+the changed files are identified in golden-covering.patch and source hashes.
+The upstream comparator problem statement credits the Formal Conjectures
+authors. Lean, Mathlib, Comparator, lean4export, Landrun, and nanoda are
+credited for their respective proof/checking and sandbox infrastructure.
+This package is not an upstream-endorsed release or a new PDE statement.

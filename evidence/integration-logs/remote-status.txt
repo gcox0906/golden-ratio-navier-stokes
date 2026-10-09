@@ -1,0 +1,22 @@
+M NavierStokes/ActualSignedGeometry.lean
+ M NavierStokes/ActualSignedNativeBounds.lean
+ M NavierStokes/ChartScales.lean
+ M NavierStokes/CommonCoverClass.lean
+ M NavierStokes/CommonCoverSolve.lean
+ M NavierStokes/CorrectionInitialization.lean
+ M NavierStokes/CorrectionInitializationNoOptions.lean
+ M NavierStokes/DiophantineGraph.lean
+ M NavierStokes/PhysicalGraphBounds.lean
+ M NavierStokes/PrimaryFieldAssembly.lean
+ M NavierStokes/SlotColoring.lean
+ M NavierStokes/SlotGeometry.lean
+ M NavierStokes/TemporalMeanUpdate.lean
+ M NavierStokes/TorusAverages.lean
+ M NavierStokes/TorusCoverDegree.lean
+ M NavierStokes/TorusCoverLattice.lean
+ M NavierStokes/TorusInverse.lean
+?? GoldenAxiomAudit.lean
+?? GoldenIntegrationAudit.lean
+?? NavierStokes/GoldenCoverLattice.lean
+?? NavierStokes/GoldenDiophantineGraph.lean
+?? NavierStokes/GoldenEigenGeometry.lean

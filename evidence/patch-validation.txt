@@ -1,0 +1,6 @@
+Base: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+Patch apply check: passed
+Patch applied to pristine exported base: passed
+All 20 resulting construction files match the Comparator-verified source text after CRLF/LF normalization.
+The changes/ snapshots retain the exact verified file hashes; git apply may normalize line endings.
+No Lean build was rerun during packaging.

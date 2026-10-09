@@ -1,0 +1,110 @@
+GOLDEN-RATIO NAVIER-STOKES INTEGRATION — VERIFIED
+
+Result
+The complete NavierStokes Lean library compiled with warnings treated as errors.
+All 820 source modules (including the library root) have verified build outputs.
+The whole-space and periodic final theorem proof terms reach the changed golden construction.
+No unproved theorem or failed module remains in this checked NavierStokes library.
+
+Final theorems checked
+  NavierStokes.Comparator.navier_stokes_breakdown_R3
+  NavierStokes.Comparator.navier_stokes_breakdown_periodic
+  NavierStokesR3.theorem_1_1
+  NavierStokesR3.theorem_1_1_with_dissipation
+  NavierStokes.PeriodicPaper.periodic_corollary
+
+These prove the repository's existing forced whole-space and periodic Navier-Stokes
+statements, using the golden auxiliary construction. Their statements and problem
+definitions were not changed. This is not a new claim about unforced regularity.
+Verification here is Lean/Lake compilation and Lean axiom inspection; the separate
+Comparator/landrun/nanoda external-kernel challenge was not run.
+
+Golden substitutions
+  Cover matrix: [[3,1],[1,4]], determinant 11.
+  Eigenvalues: (7-sqrt(5))/2 and (7+sqrt(5))/2.
+  Directions: (1,(1-sqrt(5))/2) and ((sqrt(5)-1)/2,1).
+  Covering degree: 11^d; golden Diophantine and Fourier inverse estimates.
+  NavierStokes.ChartScales.rho_gt_half: log(Lambda)/log(Tg) > 1/2.
+The existing PDE estimates retain their hypotheses and conclusions.
+
+Assumptions and linkage
+The final theorem axiom lists contain only propext, Classical.choice, and Quot.sound.
+The detailed inventory also audits 2469 theorem declarations in the 20 changed
+or added construction modules. No sorryAx or additional axiom is permitted by that audit.
+Each final comparator proof was traversed and confirmed to depend on SlotGeometry.cover,
+SlotColoring.coverGrowth, ChartScales.Lambda, TorusInverse.vector, and CommonCoverSolve.indexMap.
+The separate Stage 4 audit was rerun as well (59 theorems plus one finite instance).
+
+Changed and added modules, all compiled
+  NavierStokes.ActualSignedGeometry
+  NavierStokes.ActualSignedNativeBounds
+  NavierStokes.ChartScales
+  NavierStokes.CommonCoverClass
+  NavierStokes.CommonCoverSolve
+  NavierStokes.CorrectionInitialization
+  NavierStokes.CorrectionInitializationNoOptions
+  NavierStokes.DiophantineGraph
+  NavierStokes.PhysicalGraphBounds
+  NavierStokes.PrimaryFieldAssembly
+  NavierStokes.SlotColoring
+  NavierStokes.SlotGeometry
+  NavierStokes.TemporalMeanUpdate
+  NavierStokes.TorusAverages
+  NavierStokes.TorusCoverDegree
+  NavierStokes.TorusCoverLattice
+  NavierStokes.TorusInverse
+  NavierStokes.GoldenEigenGeometry
+  NavierStokes.GoldenDiophantineGraph
+  NavierStokes.GoldenCoverLattice
+
+Exact theorem inventory by module (includes Lean-generated theorem declarations)
+  NavierStokes.ActualSignedGeometry: 178 theorem declarations
+  NavierStokes.ActualSignedNativeBounds: 53 theorem declarations
+  NavierStokes.ChartScales: 66 theorem declarations
+  NavierStokes.CommonCoverClass: 140 theorem declarations
+  NavierStokes.CommonCoverSolve: 135 theorem declarations
+  NavierStokes.CorrectionInitialization: 493 theorem declarations
+  NavierStokes.CorrectionInitializationNoOptions: 474 theorem declarations
+  NavierStokes.DiophantineGraph: 47 theorem declarations
+  NavierStokes.GoldenCoverLattice: 25 theorem declarations
+  NavierStokes.GoldenDiophantineGraph: 47 theorem declarations
+  NavierStokes.GoldenEigenGeometry: 23 theorem declarations
+  NavierStokes.PhysicalGraphBounds: 141 theorem declarations
+  NavierStokes.PrimaryFieldAssembly: 97 theorem declarations
+  NavierStokes.SlotColoring: 74 theorem declarations
+  NavierStokes.SlotGeometry: 52 theorem declarations
+  NavierStokes.TemporalMeanUpdate: 133 theorem declarations
+  NavierStokes.TorusAverages: 98 theorem declarations
+  NavierStokes.TorusCoverDegree: 38 theorem declarations
+  NavierStokes.TorusCoverLattice: 26 theorem declarations
+  NavierStokes.TorusInverse: 129 theorem declarations
+
+Theorems-verified.tsv names every audited theorem and its axiom list.
+Modules-verified.tsv names every compiled module and its exact source SHA-256.
+
+Pinned environment
+  Upstream: https://github.com/openai/NavierStokesAndEuler.git
+  Base: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+  Branch: codex/golden-integration
+  Lean: leanprover/lean4:v4.34.0-rc2
+  Mathlib: 85e3a25e006c35636f0e53b0e9296caca2685bc0
+  Checked UTC: 2026-10-08T23:19:45.430759+00:00
+The upstream default branch and original user package were not modified.
+Changes remain in the separate local checkout and are bundled here; nothing was pushed.
+
+Resolved compilation errors
+  Stage 4: missing tactic imports, primality proof, unused tactics, and norm positivity
+  were repaired in the earlier standalone verification (also included here).
+  Integration: cover_torusEq needed integer witness a+4*b rather than a+5*b.
+  Integration: rho_gt_half needed normalization of the cast numeral in log_pow.
+  Integration: norm_coverEquiv_symm_le needed the golden inverse matrix with denominator 11.
+Logs retain failed initial runs and subsequent successful builds for traceability.
+
+Reproduction
+Create a new checkout from the pinned upstream commit and a non-default branch.
+Use the pinned Lean toolchain, then run:
+  bash verify_golden_integration.sh /path/to/separate/checkout
+The script installs the supplied source changes, obtains the pinned Mathlib cache,
+builds the full NavierStokes library, and runs both audits with warnings as errors.
+
+Cloud cost and cleanup are recorded separately in cloud-cleanup.txt.

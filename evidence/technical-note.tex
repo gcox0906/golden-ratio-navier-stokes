@@ -1,0 +1,119 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.82in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\title{A verified golden-ratio auxiliary covering\\for the Navier--Stokes construction}
+\author{Technical note accompanying the auxiliary-covering patch}
+\date{October 8, 2026}
+\begin{document}
+\maketitle
+\vspace{-1.2em}
+\begin{abstract}
+We describe a verified replacement of the two-dimensional auxiliary torus
+covering in OpenAI's Navier--Stokes construction. The replacement has
+determinant 11 rather than 14 and eigendirections in $\mathbb Q(\sqrt5)$.
+The complete dependent proofs of the repository's forced whole-space and
+periodic challenge theorems were accepted by Comparator, Lean's kernel,
+and nanoda. The theorem statements and problem definitions are unchanged.
+\end{abstract}
+
+\section*{Attribution and scope}
+The original construction, PDE argument, and upstream Lean formalization
+are due to OpenAI; see \href{https://github.com/openai/NavierStokesAndEuler}{NavierStokesAndEuler}
+and \href{https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf}{Finite time blowup for Navier--Stokes}, Section 6.
+This contribution is an alternative auxiliary construction and the proof
+repairs needed to integrate it. It does not introduce a new Navier--Stokes
+statement, an unforced regularity result, or a black-hole theorem.
+The upstream challenge credits the Formal Conjectures authors for the
+adapted problem statement; that credit is retained. Lean, Mathlib,
+Comparator, lean4export, and nanoda supply the verification infrastructure.
+
+\section*{The replacement}
+The original and replacement matrices are
+\[
+ J_0=\begin{pmatrix}3&1\\1&5\end{pmatrix},\qquad
+ J_\varphi=\begin{pmatrix}3&1\\1&4\end{pmatrix},\qquad
+ b=\frac{\sqrt5-1}{2}.
+\]
+The replacement has $b^2+b=1$, eigendirections $v_r=(1,-b)$ and
+$v_t=(b,1)$, and eigenvalues
+\[
+ \Lambda=\frac{7-\sqrt5}{2}=3-b,\qquad
+ T=\frac{7+\sqrt5}{2}=4+b,\qquad \Lambda T=11.
+\]
+The patch updates covering maps and degrees, integer quotient calculations,
+common-cover coordinates, Fourier inversion estimates, and the spectral
+scale parameters throughout the dependent construction. The quotient
+$\mathbb Z^2/J_\varphi^d\mathbb Z^2$ has $11^d$ elements; the original
+degree is $14^d$. This reduces that combinatorial count, without establishing
+a runtime improvement or a stronger final PDE conclusion.
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+ & Original & Golden replacement\\
+\midrule
+Determinant & 14 & 11\\
+$\rho=\log\Lambda/\log T$ & $0.5624713724$ & $0.5672834950$\\
+Quadratic field & $\mathbb Q(\sqrt2)$ & $\mathbb Q(\sqrt5)$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The original $\rho$ already exceeds $1/2$. The added lemma
+\texttt{ChartScales.rho\_gt\_half} therefore does not cross a previously
+unavailable threshold. No wider range of the PDE parameter $h$, or optimality
+over all admissible matrices, is claimed.
+
+\section*{Verification and evidence}
+The library build completed with warnings treated as errors: 820 source
+modules, including the root. An audit lists 2469 theorem declarations,
+including generated declarations, in the 20 changed or added construction
+modules. A separate standalone audit covers 59 named theorems and one finite
+instance. The final checked challenge targets are
+\begin{quote}\small\ttfamily
+NavierStokes.Comparator.navier\_stokes\_breakdown\_R3\\
+NavierStokes.Comparator.navier\_stokes\_breakdown\_periodic.
+\end{quote}
+Comparator ran with the original challenge configuration and
+\texttt{enable\_nanoda=true}, exited zero, and reported:
+\begin{quote}\small\ttfamily
+nanoda kernel accepts the solution\\
+Lean default kernel accepts the solution\\
+Your solution is okay!
+\end{quote}
+It checked equality of the challenge statements and dependent problem
+definitions and the permitted-axiom whitelist: \texttt{propext},
+\texttt{Quot.sound}, and \texttt{Classical.choice}. No \texttt{sorryAx}
+is permitted in the accepted solution. Intentional reference-challenge
+placeholders are distinct from solution proofs. Dependency traversal confirms
+that both final proofs reach the changed covering and spectral constants.
+The independent checker covers their dependent proofs; it does not separately
+replay every unused declaration in the library.
+
+The run used Landrun under an unprivileged account in a Linux container.
+An inherited seccomp wrapper replaced the documented systemd wrapper;
+filesystem denial and an AF\_UNIX denial test were recorded. This note reports
+proof acceptance and those tests, rather than a general adversarial-sandbox
+certification. The exact scripts, configuration, binary hashes, and logs
+are included.
+
+\section*{Pinned reproduction}
+The base commit is
+\texttt{f9e8bc5b38b6e212696e8a30e3e91517af887bbd}; Lean is
+\texttt{leanprover/lean4:v4.34.0-rc2}, and Mathlib is
+\texttt{85e3a25e006c35636f0e53b0e9296caca2685bc0}.
+Comparator is pinned to
+\texttt{19e111e2141cf333c7daff0f64c5f24acc91dd2e}.
+The accompanying \texttt{golden-covering.patch} contains 17 modified and
+three added construction modules. The audit files are supplied separately.
+Apply it in a separate checkout and named branch at the pinned base,
+then follow \texttt{REPRODUCE.txt}. The package contains the full build and
+kernel-check logs, theorem/module inventories, reproduction scripts,
+license attribution, and file hashes.
+
+This is a reproducible alternative construction. Its research novelty beyond
+that verified substitution has not been established. No upstream branch
+was modified or public discussion posted in preparing this note.
+\end{document}

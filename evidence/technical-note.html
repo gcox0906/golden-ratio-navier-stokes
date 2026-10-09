@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A verified golden-ratio auxiliary covering for the Navier–Stokes construction</title><style>body{background:#f3f5f7;color:#24313c;font:17px/1.65 Georgia;margin:0}main{max-width:850px;margin:32px auto;background:white;padding:38px 48px}h1{font-size:30px;line-height:1.22}h2{font-size:22px;margin-top:29px}a{color:#13698b}.eq{background:#eef4f8;padding:14px 18px;font:16px/1.6 Consolas,monospace;white-space:pre-wrap}table{border-collapse:collapse;width:100%;font:15px/1.6 system-ui}td,th{padding:10px;text-align:left;border-bottom:1px solid #dae2e8}.small{font:14px/1.6 system-ui;color:#55616d}@media(max-width:650px){main{margin:0;padding:24px}}@media print{body{background:white}main{margin:0;padding:0}h2{break-after:avoid}}</style></head><body><main>
+<p class="small">Short technical note · October 8, 2026 · prepared for review</p>
+<h1>A verified golden-ratio auxiliary covering for the Navier–Stokes construction</h1>
+<p>An alternative two-dimensional auxiliary torus covering has been integrated into OpenAI’s existing Navier–Stokes formalization. The final whole-space and periodic forced-fluid challenge statements are unchanged. Their dependent proofs were accepted by Comparator, Lean’s kernel, and nanoda.</p>
+<h2>Attribution and scope</h2>
+<p>The original construction, PDE argument and upstream formalization are due to OpenAI: <a href="https://github.com/openai/NavierStokesAndEuler">NavierStokesAndEuler</a> and <a href="https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf">Finite time blowup for Navier–Stokes</a>, Section 6. This contribution changes the auxiliary covering and repairs its dependent proofs. It introduces no new PDE statement or black-hole theorem. The upstream credit to the Formal Conjectures authors for the adapted challenge statement is retained; Lean, Mathlib, Comparator, lean4export and nanoda are credited for verification infrastructure.</p>
+<h2>The replacement</h2>
+<div class="eq">Original:       J₀ = [[3,1],[1,5]],  det J₀ = 14.
+Replacement:    Jφ = [[3,1],[1,4]],  det Jφ = 11.
+b = (√5−1)/2,   b²+b = 1.
+vr = (1,−b),    vt = (b,1).
+Λ = (7−√5)/2,   T = (7+√5)/2,   ΛT = 11.</div>
+<p>The patch updates covering maps and degrees, lattice quotients, common-cover coordinates, directional Fourier inverse estimates and chart-scale constants. At depth d the covering degree becomes 11ᵈ rather than 14ᵈ. This changes a combinatorial count; no runtime benchmark or stronger PDE conclusion is claimed.</p>
+<table><thead><tr><th></th><th>Original</th><th>Golden replacement</th></tr></thead><tbody><tr><td>Determinant</td><td>14</td><td>11</td></tr><tr><td>ρ = log Λ / log T</td><td>0.5624713724</td><td>0.5672834950</td></tr><tr><td>Quadratic field</td><td>ℚ(√2)</td><td>ℚ(√5)</td></tr></tbody></table>
+<p>The original ρ already exceeds 1/2. The added <code>ChartScales.rho_gt_half</code> lemma therefore does not cross a previously unavailable threshold. No wider h range, optimality among all matrices, or new physical significance of φ is claimed.</p>
+<h2>What was verified</h2>
+<p>The complete NavierStokes library built with warnings treated as errors: 820 source modules including the root. An axiom inventory covers 2469 theorem declarations, including generated declarations, in the 20 changed or added construction modules. A separate Stage 4 audit covers 59 named theorems and one finite instance.</p>
+<div class="eq">Final independent-checker targets:
+NavierStokes.Comparator.navier_stokes_breakdown_R3
+NavierStokes.Comparator.navier_stokes_breakdown_periodic</div>
+<p>Comparator ran with the original challenge and <code>enable_nanoda=true</code>, exited zero, and recorded all three success messages:</p>
+<div class="eq">nanoda kernel accepts the solution
+Lean default kernel accepts the solution
+Your solution is okay!</div>
+<p>The challenge definitions were unchanged. Only <code>propext</code>, <code>Quot.sound</code> and <code>Classical.choice</code> were permitted; <code>sorryAx</code> is excluded. The intentional reference-challenge placeholders are separate from the accepted solution proofs. Dependency traversal confirms that both final proofs reach the changed covering and spectral constants. The independent check covers their dependent proof terms, rather than replaying every unused declaration in the library.</p>
+<p>The checker ran under an unprivileged Linux account with Landrun. An inherited seccomp wrapper replaced the documented systemd wrapper. The recorded filesystem and AF_UNIX denial tests are disclosed in the evidence. These records establish proof acceptance and the tested properties; they are not a general adversarial-sandbox certification.</p>
+<h2>Patch and reproduction</h2>
+<div class="eq">Upstream base: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+Lean: leanprover/lean4:v4.34.0-rc2
+Mathlib: 85e3a25e006c35636f0e53b0e9296caca2685bc0
+Comparator: 19e111e2141cf333c7daff0f64c5f24acc91dd2e</div>
+<p><a href="golden-covering.patch">The complete patch</a> contains 17 modified and three added construction modules. It applies to a pristine copy of the pinned base and reproduces the verified source text; exact verified file snapshots are supplied separately because patch application may normalize line endings. The audit modules are also included. Follow <a href="REPRODUCE.txt">the reproduction instructions</a> in a separate checkout and named branch.</p>
+<p>The package includes <a href="checker-logs/comparator.log">the complete Comparator log</a>, <a href="comparator-status.txt">the independent-checker report</a>, <a href="integration-status.txt">the library-build report</a>, <a href="modules-verified.tsv">module hashes</a>, <a href="theorems-verified.tsv">the theorem/axiom inventory</a>, all relevant scripts, original license attribution, and integrity hashes. These logs record the earlier successful verification; packaging did not rerun the Lean kernels.</p>
+<p>This is a reproducible alternative auxiliary construction. Research novelty beyond that substitution has not been established. No upstream branch was modified and no public issue, discussion, pull request or website was published. The <a href="upstream-discussion.txt">short upstream-discussion draft</a> is ready for review.</p>
+<p class="small">An editable LaTeX version is included. The app’s PDF-preview helper failed to initialize during preparation, so no compiled PDF is included; this HTML note is the readable version.</p>
+</main></body></html>

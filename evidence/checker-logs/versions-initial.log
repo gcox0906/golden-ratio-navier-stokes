@@ -1,0 +1,10 @@
+Lean (version 4.34.0-rc2, x86_64-unknown-linux-gnu, commit 6a10ac8c22beadecabdbb0919c2b50214762f91d, Release)
+Lake version 5.0.0-src+6a10ac8 (Lean version 4.34.0-rc2)
+f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+19e111e2141cf333c7daff0f64c5f24acc91dd2e
+cacf989bd75f608700820f6afc595f32e7a99a4d
+811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+fatal: detected dubious ownership in repository at '/workspace/comparator/nanoda'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /workspace/comparator/nanoda

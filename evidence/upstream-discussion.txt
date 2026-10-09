@@ -1,0 +1,39 @@
+A verified golden-ratio auxiliary covering for the Navier–Stokes construction
+
+I have checked an alternative auxiliary torus covering for OpenAI's existing
+Navier–Stokes construction. All credit for the original PDE construction and
+formalization remains with the upstream authors:
+https://github.com/openai/NavierStokesAndEuler
+
+The change replaces [[3,1],[1,5]] by [[3,1],[1,4]]. Its determinant is 11,
+its eigenvalues are (7±sqrt(5))/2, and its eigendirections use
+b=(sqrt(5)−1)/2 with b²+b=1. The dependent cover-degree, lattice-quotient,
+Fourier-inversion and chart-scale proofs have been updated consistently.
+
+At the pinned upstream base f9e8bc5b38b6e212696e8a30e3e91517af887bbd:
+
+- The full NavierStokes library compiled with warnings treated as errors
+  (820 source modules).
+- The unchanged whole-space and periodic Comparator challenge targets passed
+  with enable_nanoda=true. Both nanoda and Lean's kernel accepted their
+  exported dependent proofs; Comparator exited zero.
+- Only propext, Quot.sound and Classical.choice were permitted. The challenge
+  definitions were unchanged, and the final proofs reach the replacement
+  auxiliary construction.
+
+The contribution reduces the covering degree from 14^d to 11^d and changes
+rho from approximately 0.562471 to 0.567283. The original rho already exceeds
+1/2. I am not claiming a new threshold, a wider h range, a stronger PDE
+statement, universal optimality, or a connection to black-hole physics.
+
+The attached review package contains golden-covering.patch (all 20 construction
+modules), the short technical note, the complete build/checker logs and source
+inventories, pinned reproduction instructions, and SHA-256 hashes. The checker
+used a container-compatible seccomp wrapper in place of the documented
+systemd wrapper; the scripts and tested sandbox properties are disclosed.
+
+Would this alternative covering be useful as an upstream option or example?
+If so, I would welcome guidance on the preferred abstraction for a general
+family of admissible auxiliary matrices.
+
+Draft only: no issue, discussion, PR, or repository has been published.

@@ -1,0 +1,39 @@
+Lean (version 4.34.0-rc2, x86_64-unknown-linux-gnu, commit 6a10ac8c22beadecabdbb0919c2b50214762f91d, Release)
+Lake version 5.0.0-src+6a10ac8 (Lean version 4.34.0-rc2)
+f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+19e111e2141cf333c7daff0f64c5f24acc91dd2e
+cacf989bd75f608700820f6afc595f32e7a99a4d
+811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+3a2407216ee84a75f9e1aead6803d0578be06ae7
+rustc 1.99.0 (b940084d7 2026-09-28)
+NAME:
+   landrun - Run a command in a Landlock sandbox
+
+USAGE:
+   landrun [global options]
+
+VERSION:
+   0.1.18
+
+GLOBAL OPTIONS:
+   --log-level string                       Set logging level (error, info, debug) (default: "error") [$LANDRUN_LOG_LEVEL]
+   --ro string [ --ro string ]              Allow read-only access to this path
+   --rox string [ --rox string ]            Allow read-only access with execution to this path
+   --rw string [ --rw string ]              Allow read-write access to this path
+   --rwx string [ --rwx string ]            Allow read-write access with execution to this path
+   --unix string [ --unix string ]          Allow connect(2)/sendmsg(2) on this pathname UNIX domain socket (Landlock ABI v9+)
+   --bind-tcp int [ --bind-tcp int ]        Allow binding to these TCP ports
+   --connect-tcp int [ --connect-tcp int ]  Allow connecting to these TCP ports
+   --best-effort                            Use best effort mode (fall back to less restrictive sandbox if necessary)
+   --env string [ --env string ]            Environment variables to pass to the sandboxed command (KEY=VALUE or just KEY to pass current value)
+   --unrestricted-filesystem                Allow unrestricted filesystem access
+   --unrestricted-network                   Allow unrestricted network access
+   --unrestricted-scoped                    Allow unrestricted IPC scoping (do not restrict abstract UNIX sockets and signals; Landlock ABI v6+)
+   --ignore-missing                         Gracefully ignore paths that do not exist instead of failing
+   --log-disable-originating                Disable audit logging of denials from the originating process (Landlock ABI v7+)
+   --log-enable-subprocesses                Enable audit logging of denials after execve(2) in subprocesses (Landlock ABI v7+)
+   --log-disable-subdomains                 Disable audit logging of denials from nested Landlock domains (Landlock ABI v7+)
+   --ldd                                    Automatically detect and add library dependencies to --rox
+   --add-exec                               Automatically add the executable path to --rox
+   --help, -h                               show help
+   --version, -v                            print the version

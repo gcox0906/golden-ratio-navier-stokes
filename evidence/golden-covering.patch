@@ -1,0 +1,1496 @@
+diff --git a/NavierStokes/ActualSignedGeometry.lean b/NavierStokes/ActualSignedGeometry.lean
+index 1c72aae..cf88b2d 100644
+--- a/NavierStokes/ActualSignedGeometry.lean
++++ b/NavierStokes/ActualSignedGeometry.lean
+@@ -876,7 +876,7 @@ noncomputable def temporalVector : Plane := TorusInverse.vector .temporal
+ 
+ theorem vectors_det : radialVector.1 * temporalVector.2 - radialVector.2 * temporalVector.1 ≠ 0 := by
+   dsimp [radialVector, temporalVector, TorusInverse.vector]
+-  nlinarith [sq_nonneg (Real.sqrt 2 - 1)]
++  nlinarith [sq_nonneg (((Real.sqrt 5 - 1) / 2))]
+ 
+ noncomputable def slotLinear (g : CommonCoverSolve.Geometry) : Cylinder →L[ℝ] PhaseCalculus.Slot where
+   toFun x := ((x.1.1, x.1.2.1), (x.2, (g.coordinateLinear x.1.2.2).2))
+diff --git a/NavierStokes/ActualSignedNativeBounds.lean b/NavierStokes/ActualSignedNativeBounds.lean
+index e706163..e040cf6 100644
+--- a/NavierStokes/ActualSignedNativeBounds.lean
++++ b/NavierStokes/ActualSignedNativeBounds.lean
+@@ -60,19 +60,19 @@ theorem norm_coverEquiv_symm_le (y : TorusInverse.Plane) :
+   rw [CommonCoverSolve.coverEquiv_apply, SlotGeometry.cover_apply] at he
+   have h1 := congrArg Prod.fst he
+   have h2 := congrArg Prod.snd he
+-  have hx : x.1 = (5 * y.1 - y.2) / 14 := by dsimp only at h1 h2; linarith
+-  have hy : x.2 = (3 * y.2 - y.1) / 14 := by dsimp only at h1 h2; linarith
++  have hx : x.1 = (4 * y.1 - y.2) / 11 := by dsimp only at h1 h2; linarith
++  have hy : x.2 = (3 * y.2 - y.1) / 11 := by dsimp only at h1 h2; linarith
+   have hY1 : |y.1| ≤ ‖y‖ := by simpa only [Real.norm_eq_abs] using norm_fst_le y
+   have hY2 : |y.2| ≤ ‖y‖ := by simpa only [Real.norm_eq_abs] using norm_snd_le y
+   have hX : |x.1| ≤ ‖y‖ := by
+-    rw [hx, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 14)]
+-    apply (div_le_iff₀ (by norm_num : (0 : ℝ) < 14)).mpr
+-    have ha := abs_sub (5 * y.1) y.2
+-    rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 5)] at ha
++    rw [hx, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 11)]
++    apply (div_le_iff₀ (by norm_num : (0 : ℝ) < 11)).mpr
++    have ha := abs_sub (4 * y.1) y.2
++    rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 4)] at ha
+     nlinarith [norm_nonneg y]
+   have hY : |x.2| ≤ ‖y‖ := by
+-    rw [hy, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 14)]
+-    apply (div_le_iff₀ (by norm_num : (0 : ℝ) < 14)).mpr
++    rw [hy, abs_div, abs_of_pos (by norm_num : (0 : ℝ) < 11)]
++    apply (div_le_iff₀ (by norm_num : (0 : ℝ) < 11)).mpr
+     have ha := abs_sub (3 * y.2) y.1
+     rw [abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 3)] at ha
+     nlinarith [norm_nonneg y]
+diff --git a/NavierStokes/ChartScales.lean b/NavierStokes/ChartScales.lean
+index b6c41ce..96a345b 100644
+--- a/NavierStokes/ChartScales.lean
++++ b/NavierStokes/ChartScales.lean
+@@ -19,7 +19,7 @@ open Filter
+ open scoped Topology
+ 
+ abbrev Tg : ℝ := SlotColoring.coverGrowth
+-def Lambda : ℝ := 4 - Real.sqrt 2
++def Lambda : ℝ := (7 - Real.sqrt 5) / 2
+ def rho : ℝ := Real.log Lambda / Real.log Tg
+ def kappa : ℝ := 1 / 100000
+ def radialExponent (h : ℝ) : ℝ := 2 * ((1 + h) * rho - h * kappa)
+@@ -33,19 +33,19 @@ def timeCoefficient (h : ℝ) (n : ℕ) : ℝ := Tg ^ nativeIndex h n * Q n ^ (1
+ def radialCoefficient (h : ℝ) (n : ℕ) : ℝ :=
+   Lambda ^ nativeIndex h n * Q n ^ (radialExponent h / 2)
+ 
+-theorem sqrt_two_lt_two : Real.sqrt (2 : ℝ) < 2 := by
+-  nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2), Real.sqrt_nonneg (2 : ℝ)]
++theorem sqrt_five_lt_three : Real.sqrt (5 : ℝ) < 3 := by
++  nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 5), Real.sqrt_nonneg (5 : ℝ)]
+ 
+ theorem Tg_one_lt : 1 < Tg := by
+   unfold Tg SlotColoring.coverGrowth
+-  linarith [Real.sqrt_nonneg (2 : ℝ)]
++  linarith [Real.sqrt_nonneg (5 : ℝ)]
+ 
+ theorem Tg_pos : 0 < Tg := lt_trans zero_lt_one Tg_one_lt
+ theorem log_Tg_pos : 0 < Real.log Tg := SlotColoring.log_coverGrowth_pos
+ 
+ theorem Lambda_two_lt : 2 < Lambda := by
+   unfold Lambda
+-  linarith [sqrt_two_lt_two]
++  linarith [sqrt_five_lt_three]
+ 
+ theorem Lambda_pos : 0 < Lambda := lt_trans (by norm_num) Lambda_two_lt
+ theorem log_Lambda_pos : 0 < Real.log Lambda := Real.log_pos (by linarith [Lambda_two_lt])
+@@ -56,7 +56,7 @@ theorem rho_lower : (1 / 3 : ℝ) ≤ rho := by
+   have ht : Tg ≤ (2 : ℝ) ^ 3 := by
+     unfold Tg SlotColoring.coverGrowth
+     norm_num
+-    linarith [sqrt_two_lt_two]
++    linarith [sqrt_five_lt_three]
+   have htlog := Real.log_le_log Tg_pos ht
+   rw [Real.log_pow] at htlog
+   norm_num at htlog
+@@ -64,6 +64,19 @@ theorem rho_lower : (1 / 3 : ℝ) ≤ rho := by
+   apply (le_div_iff₀ log_Tg_pos).mpr
+   linarith
+ 
++/-- The golden matrix has a logarithmic eigenvalue ratio strictly above one half. -/
++theorem rho_gt_half : (1 / 2 : ℝ) < rho := by
++  have he : Tg < Lambda ^ 2 := by
++    unfold Tg SlotColoring.coverGrowth Lambda
++    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 5),
++      Real.sqrt_nonneg (5 : ℝ)]
++  have hl := Real.log_lt_log Tg_pos he
++  rw [Real.log_pow] at hl
++  norm_num at hl
++  unfold rho
++  apply (lt_div_iff₀ log_Tg_pos).mpr
++  linarith
++
+ theorem rho_pos : 0 < rho := lt_of_lt_of_le (by norm_num) rho_lower
+ 
+ /-- This includes the manuscript's range `0<h<1/2`, and in fact every `h≥0`. -/
+diff --git a/NavierStokes/CommonCoverClass.lean b/NavierStokes/CommonCoverClass.lean
+index 27d20fa..9770d99 100644
+--- a/NavierStokes/CommonCoverClass.lean
++++ b/NavierStokes/CommonCoverClass.lean
+@@ -1277,7 +1277,7 @@ noncomputable def nativeBasis : Plane ≃L[ℝ] Plane :=
+     (by
+       unfold PhysicalGraphBounds.radialDirection PhysicalGraphBounds.timeDirection
+       dsimp only
+-      nlinarith [sq_nonneg (Real.sqrt 2 - 1)])
++      nlinarith [sq_nonneg (((Real.sqrt 5 - 1) / 2))])
+ 
+ theorem nativeBasis_radial : nativeBasis (1, 0) = PhysicalGraphBounds.radialDirection := by
+   rw [nativeBasis, TorusAverages.slotChart_apply]
+diff --git a/NavierStokes/CommonCoverSolve.lean b/NavierStokes/CommonCoverSolve.lean
+index 413365e..b6a894d 100644
+--- a/NavierStokes/CommonCoverSolve.lean
++++ b/NavierStokes/CommonCoverSolve.lean
+@@ -20,7 +20,7 @@ open scoped Topology ContDiff BigOperators InnerProductSpace
+ open TorusInverse
+ 
+ noncomputable def coverEquiv : Plane ≃L[ℝ] Plane :=
+-  TorusAverages.slotChart (3, 1) (1, 5) (by norm_num)
++  TorusAverages.slotChart (3, 1) (1, 4) (by norm_num)
+ 
+ theorem coverEquiv_apply (Y : Plane) : coverEquiv Y = SlotGeometry.cover Y := by
+   rw [coverEquiv, TorusAverages.slotChart_apply, SlotGeometry.cover_apply]
+@@ -39,7 +39,7 @@ theorem coverPower_apply (d : ℕ) (Y : Plane) :
+       rw [coverEquiv_apply, ih, pow_succ', _root_.mul_apply_eq_comp]
+ 
+ noncomputable def indexMap (k : Frequency) : Frequency :=
+-  (3 * k.1 + k.2, k.1 + 5 * k.2)
++  (3 * k.1 + k.2, k.1 + 4 * k.2)
+ 
+ noncomputable def coverIndex (d : ℕ) (k : Frequency) : Frequency := indexMap^[d] k
+ 
+diff --git a/NavierStokes/CorrectionInitialization.lean b/NavierStokes/CorrectionInitialization.lean
+index be7ff93..81ed19e 100644
+--- a/NavierStokes/CorrectionInitialization.lean
++++ b/NavierStokes/CorrectionInitialization.lean
+@@ -3895,7 +3895,7 @@ noncomputable def temporalVector : TorusInverse.Plane := TorusInverse.vector .te
+ 
+ theorem vectors_det : radialVector.1 * temporalVector.2 - radialVector.2 * temporalVector.1 ≠ 0 := by
+   dsimp [radialVector, temporalVector, TorusInverse.vector]
+-  nlinarith [sq_nonneg (Real.sqrt 2 - 1)]
++  nlinarith [sq_nonneg (((Real.sqrt 5 - 1) / 2))]
+ 
+ noncomputable def slots : PartitionedCovariance.SlotSystem (CoordinateAlgebra.D h) h radialVector temporalVector :=
+   PartitionedCovariance.constructedSlotSystem (CoordinateAlgebra.D h) h outgoing.data.h_pos.le radialVector temporalVector
+diff --git a/NavierStokes/CorrectionInitializationNoOptions.lean b/NavierStokes/CorrectionInitializationNoOptions.lean
+index 9b4b9f1..cf0f3e5 100644
+--- a/NavierStokes/CorrectionInitializationNoOptions.lean
++++ b/NavierStokes/CorrectionInitializationNoOptions.lean
+@@ -3906,7 +3906,7 @@ noncomputable def temporalVector : TorusInverse.Plane := TorusInverse.vector .te
+ 
+ theorem vectors_det : radialVector.1 * temporalVector.2 - radialVector.2 * temporalVector.1 ≠ 0 := by
+   dsimp [radialVector, temporalVector, TorusInverse.vector]
+-  nlinarith [sq_nonneg (Real.sqrt 2 - 1)]
++  nlinarith [sq_nonneg (((Real.sqrt 5 - 1) / 2))]
+ 
+ noncomputable def slots : PartitionedCovariance.SlotSystem (CoordinateAlgebra.D h) h radialVector temporalVector :=
+   PartitionedCovariance.constructedSlotSystem (CoordinateAlgebra.D h) h outgoing.data.h_pos.le radialVector temporalVector
+diff --git a/NavierStokes/DiophantineGraph.lean b/NavierStokes/DiophantineGraph.lean
+index b8372e8..a1cbd1c 100644
+--- a/NavierStokes/DiophantineGraph.lean
++++ b/NavierStokes/DiophantineGraph.lean
+@@ -4,43 +4,49 @@ import Mathlib.Tactic.Linarith
+ import Mathlib.Tactic.NormNum
+ import Mathlib.Tactic.Positivity
+ import Mathlib.Tactic.Ring
++import Lean.Elab.Tactic.Omega
+ 
+ /-!
+-# Diophantine bounds for the manuscript's graph directions
+-
+-For every nonzero integer frequency `(m,n)`, the directions
+-`v_r = (1, 1 - sqrt 2)` and `v_t = (sqrt 2 - 1, 1)` have symbols bounded
+-below by `(1/6)/(1 + sqrt (m^2+n^2))`. The proof multiplies each quadratic
+-integer by its conjugate, proves that the resulting integer is nonzero using
+-irrationality of `sqrt 2`, and bounds the conjugate explicitly.
++Golden matrix Fourier non-resonance and quantitative small-divisor estimates.
++Standalone candidate to migrate into the original DiophantineGraph.lean.
++Verified with Lean 4.34.0-rc2 on 2026-10-08. Integration into the full
++Navier–Stokes construction remains unproved.
+ -/
+ 
+ noncomputable section
+-
+ namespace NavierStokes.DiophantineGraph
+ 
+-def quadraticForm (p q : ℤ) : ℝ := (p : ℝ) + Real.sqrt 2 * (q : ℝ)
++def quadraticForm (p q : ℤ) : ℝ := (p : ℝ) + Real.sqrt 5 * (q : ℝ)
+ 
+-def integerNorm (p q : ℤ) : ℤ := p ^ 2 - 2 * q ^ 2
++def integerNorm (p q : ℤ) : ℤ := p ^ 2 - 5 * q ^ 2
+ 
+-theorem sqrt_two_square : (Real.sqrt 2) ^ 2 = (2 : ℝ) :=
++theorem sqrt_five_square : (Real.sqrt 5) ^ 2 = (5 : ℝ) :=
+   Real.sq_sqrt (by norm_num)
+ 
+-theorem sqrt_two_le_two : Real.sqrt 2 ≤ (2 : ℝ) := by
+-  nlinarith [sqrt_two_square, Real.sqrt_nonneg (2 : ℝ)]
++theorem sqrt_five_le_three : Real.sqrt 5 ≤ (3 : ℝ) := by
++  nlinarith [sqrt_five_square, Real.sqrt_nonneg (5 : ℝ)]
+ 
+ theorem quadraticForm_ne_zero (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
+     quadraticForm p q ≠ 0 := by
+   by_cases hq : q = 0
+   · have hp : p ≠ 0 := hpq.resolve_right (not_not.mpr hq)
+     simpa [quadraticForm, hq] using hp
+-  · exact ((irrational_sqrt_two.mul_intCast hq).intCast_add p).ne_zero
++  · have hi : Irrational (Real.sqrt 5) :=
++      (show Nat.Prime 5 by decide).irrational_sqrt
++    have hne := hi.ne_rational (-p) q
++    intro hz
++    apply hne
++    have hq' : (q : ℝ) ≠ 0 := by exact_mod_cast hq
++    apply (eq_div_iff hq').mpr
++    dsimp [quadraticForm] at hz
++    push_cast
++    nlinarith
+ 
+ theorem conjugate_product (p q : ℤ) :
+     quadraticForm p q * quadraticForm p (-q) = (integerNorm p q : ℝ) := by
+   simp only [quadraticForm, integerNorm, Int.cast_neg, Int.cast_sub,
+     Int.cast_pow, Int.cast_mul, Int.cast_ofNat]
+-  nlinarith [congrArg (fun x : ℝ => x * (q : ℝ) ^ 2) sqrt_two_square]
++  nlinarith [congrArg (fun x : ℝ => x * (q : ℝ) ^ 2) sqrt_five_square]
+ 
+ theorem integerNorm_ne_zero (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
+     integerNorm p q ≠ 0 := by
+@@ -54,65 +60,90 @@ theorem integerNorm_ne_zero (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
+   apply hprod
+   rw [conjugate_product, hz, Int.cast_zero]
+ 
+-/-- The nonzero algebraic norm is an integer, so its absolute value is at least one. -/
+-theorem conjugate_product_lower (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
+-    1 ≤ |quadraticForm p q| * |quadraticForm p (-q)| := by
+-  have hi : (1 : ℤ) ≤ |integerNorm p q| :=
+-    Int.add_one_le_iff.mpr (abs_pos.mpr (integerNorm_ne_zero p q hpq))
+-  have hr : (1 : ℝ) ≤ |(integerNorm p q : ℝ)| := by exact_mod_cast hi
+-  rw [← conjugate_product, abs_mul] at hr
+-  exact hr
+-
+-def radialSymbol (m n : ℤ) : ℝ := quadraticForm (m + n) (-n)
+-
+-def timeSymbol (m n : ℤ) : ℝ := quadraticForm (n - m) m
++/-! The correct golden symbols use (2m+n, -n), not the old silver symbols. -/
++def radialSymbol (m n : ℤ) : ℝ := quadraticForm (2 * m + n) (-n) / 2
++def timeSymbol (m n : ℤ) : ℝ := quadraticForm (2 * n - m) m / 2
+ 
+-def radialConjugate (m n : ℤ) : ℝ := quadraticForm (m + n) n
++def radialConjugate (m n : ℤ) : ℝ := quadraticForm (2 * m + n) n / 2
++def timeConjugate (m n : ℤ) : ℝ := quadraticForm (2 * n - m) (-m) / 2
+ 
+-def timeConjugate (m n : ℤ) : ℝ := quadraticForm (n - m) (-m)
++def goldenNorm (m n : ℤ) : ℤ := m ^ 2 + m * n - n ^ 2
+ 
+ theorem radialSymbol_formula (m n : ℤ) :
+-    radialSymbol m n = (m : ℝ) + (1 - Real.sqrt 2) * (n : ℝ) := by
+-  simp only [radialSymbol, quadraticForm, Int.cast_add, Int.cast_neg]
++    radialSymbol m n = (m : ℝ) + ((1 - Real.sqrt 5) / 2) * (n : ℝ) := by
++  simp [radialSymbol, quadraticForm]
+   ring
+ 
+ theorem timeSymbol_formula (m n : ℤ) :
+-    timeSymbol m n = (Real.sqrt 2 - 1) * (m : ℝ) + (n : ℝ) := by
+-  simp only [timeSymbol, quadraticForm, Int.cast_sub]
++    timeSymbol m n = ((Real.sqrt 5 - 1) / 2) * (m : ℝ) + (n : ℝ) := by
++  simp [timeSymbol, quadraticForm]
+   ring
+ 
+ theorem radialConjugate_formula (m n : ℤ) :
+-    radialConjugate m n = (m : ℝ) + (1 + Real.sqrt 2) * (n : ℝ) := by
+-  simp only [radialConjugate, quadraticForm, Int.cast_add]
++    radialConjugate m n = (m : ℝ) + ((1 + Real.sqrt 5) / 2) * (n : ℝ) := by
++  simp [radialConjugate, quadraticForm]
+   ring
+ 
+ theorem timeConjugate_formula (m n : ℤ) :
+-    timeConjugate m n = (n : ℝ) - (1 + Real.sqrt 2) * (m : ℝ) := by
+-  simp only [timeConjugate, quadraticForm, Int.cast_sub, Int.cast_neg]
++    timeConjugate m n = (n : ℝ) - ((1 + Real.sqrt 5) / 2) * (m : ℝ) := by
++  simp [timeConjugate, quadraticForm]
+   ring
+ 
+-theorem radial_product_lower (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+-    1 ≤ |radialSymbol m n| * |radialConjugate m n| := by
+-  have hpq : m + n ≠ 0 ∨ -n ≠ 0 := by
++theorem radial_product_formula (m n : ℤ) :
++    radialSymbol m n * radialConjugate m n = (goldenNorm m n : ℝ) := by
++  rw [radialSymbol_formula, radialConjugate_formula]
++  simp [goldenNorm]
++  nlinarith [congrArg (fun x : ℝ => x * (n : ℝ) ^ 2) sqrt_five_square]
++
++theorem time_product_formula (m n : ℤ) :
++    timeSymbol m n * timeConjugate m n =
++      ((n ^ 2 - n * m - m ^ 2 : ℤ) : ℝ) := by
++  rw [timeSymbol_formula, timeConjugate_formula]
++  push_cast
++  nlinarith [congrArg (fun x : ℝ => x * (m : ℝ) ^ 2) sqrt_five_square]
++
++theorem goldenNorm_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    goldenNorm m n ≠ 0 := by
++  have hpq : 2 * m + n ≠ 0 ∨ -n ≠ 0 := by
+     by_cases hn : n = 0
+     · left
+-      simpa [hn] using hmn.resolve_right (not_not.mpr hn)
++      have hm : m ≠ 0 := hmn.resolve_right (not_not.mpr hn)
++      omega
+     · exact Or.inr (neg_ne_zero.mpr hn)
+-  simpa only [radialSymbol, radialConjugate, neg_neg] using
+-    conjugate_product_lower (m + n) (-n) hpq
++  have hpq' : 2 * m + n ≠ 0 ∨ n ≠ 0 := by
++    rcases hpq with hp | hn
++    · exact Or.inl hp
++    · exact Or.inr (neg_ne_zero.mp hn)
++  have hr : radialSymbol m n ≠ 0 :=
++    div_ne_zero (quadraticForm_ne_zero _ _ hpq) (by norm_num)
++  have hc : radialConjugate m n ≠ 0 :=
++    div_ne_zero (quadraticForm_ne_zero _ _ hpq') (by norm_num)
++  intro hz
++  have hprod := radial_product_formula m n
++  rw [hz, Int.cast_zero] at hprod
++  exact (mul_ne_zero hr hc) hprod
++
++theorem radial_product_lower (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    1 ≤ |radialSymbol m n| * |radialConjugate m n| := by
++  have hi : (1 : ℤ) ≤ |goldenNorm m n| :=
++    Int.add_one_le_iff.mpr (abs_pos.mpr (goldenNorm_ne_zero m n hmn))
++  have hr : (1 : ℝ) ≤ |(goldenNorm m n : ℝ)| := by exact_mod_cast hi
++  rw [← radial_product_formula, abs_mul] at hr
++  exact hr
+ 
+ theorem time_product_lower (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     1 ≤ |timeSymbol m n| * |timeConjugate m n| := by
+-  have hpq : n - m ≠ 0 ∨ m ≠ 0 := by
+-    by_cases hm : m = 0
+-    · left
+-      simpa [hm] using hmn.resolve_left (not_not.mpr hm)
+-    · exact Or.inr hm
+-  exact conjugate_product_lower (n - m) m hpq
++  have hnorm : n ^ 2 - n * m - m ^ 2 = -(goldenNorm m n) := by
++    unfold goldenNorm
++    ring
++  have hi : (1 : ℤ) ≤ |n ^ 2 - n * m - m ^ 2| := by
++    rw [hnorm, abs_neg]
++    exact Int.add_one_le_iff.mpr (abs_pos.mpr (goldenNorm_ne_zero m n hmn))
++  have hr : (1 : ℝ) ≤ |((n ^ 2 - n * m - m ^ 2 : ℤ) : ℝ)| := by exact_mod_cast hi
++  rw [← time_product_formula, abs_mul] at hr
++  exact hr
+ 
+ def frequencyL1 (m n : ℤ) : ℝ := |(m : ℝ)| + |(n : ℝ)|
+-
+-/-- This is the usual Euclidean length of the integer frequency. -/
+ def frequencyLength (m n : ℤ) : ℝ := Real.sqrt ((m : ℝ) ^ 2 + (n : ℝ) ^ 2)
+ 
+ theorem frequencyL1_nonneg (m n : ℤ) : 0 ≤ frequencyL1 m n := by
+@@ -125,27 +156,31 @@ theorem frequencyLength_nonneg (m n : ℤ) : 0 ≤ frequencyLength m n :=
+ theorem radialConjugate_upper (m n : ℤ) :
+     |radialConjugate m n| ≤ 3 * frequencyL1 m n := by
+   rw [radialConjugate_formula]
++  have hb : 0 ≤ (1 + Real.sqrt 5) / 2 ∧ (1 + Real.sqrt 5) / 2 ≤ 3 := by
++    constructor <;> nlinarith [sqrt_five_le_three, Real.sqrt_nonneg (5 : ℝ)]
+   calc
+-    |(m : ℝ) + (1 + Real.sqrt 2) * (n : ℝ)| ≤
+-        |(m : ℝ)| + |(1 + Real.sqrt 2) * (n : ℝ)| := abs_add_le _ _
+-    _ = |(m : ℝ)| + (1 + Real.sqrt 2) * |(n : ℝ)| := by
+-      rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ 1 + Real.sqrt 2)]
++    |(m : ℝ) + ((1 + Real.sqrt 5) / 2) * (n : ℝ)| ≤
++        |(m : ℝ)| + |((1 + Real.sqrt 5) / 2) * (n : ℝ)| := abs_add_le _ _
++    _ = |(m : ℝ)| + ((1 + Real.sqrt 5) / 2) * |(n : ℝ)| := by
++      rw [abs_mul, abs_of_nonneg hb.1]
+     _ ≤ 3 * frequencyL1 m n := by
+       unfold frequencyL1
+-      nlinarith [mul_le_mul_of_nonneg_right sqrt_two_le_two (abs_nonneg (n : ℝ)),
++      nlinarith [mul_le_mul_of_nonneg_right hb.2 (abs_nonneg (n : ℝ)),
+         abs_nonneg (m : ℝ)]
+ 
+ theorem timeConjugate_upper (m n : ℤ) :
+     |timeConjugate m n| ≤ 3 * frequencyL1 m n := by
+   rw [timeConjugate_formula]
++  have hb : 0 ≤ (1 + Real.sqrt 5) / 2 ∧ (1 + Real.sqrt 5) / 2 ≤ 3 := by
++    constructor <;> nlinarith [sqrt_five_le_three, Real.sqrt_nonneg (5 : ℝ)]
+   calc
+-    |(n : ℝ) - (1 + Real.sqrt 2) * (m : ℝ)| ≤
+-        |(n : ℝ)| + |(1 + Real.sqrt 2) * (m : ℝ)| := abs_sub _ _
+-    _ = |(n : ℝ)| + (1 + Real.sqrt 2) * |(m : ℝ)| := by
+-      rw [abs_mul, abs_of_nonneg (by positivity : 0 ≤ 1 + Real.sqrt 2)]
++    |(n : ℝ) - ((1 + Real.sqrt 5) / 2) * (m : ℝ)| ≤
++        |(n : ℝ)| + |((1 + Real.sqrt 5) / 2) * (m : ℝ)| := abs_sub _ _
++    _ = |(n : ℝ)| + ((1 + Real.sqrt 5) / 2) * |(m : ℝ)| := by
++      rw [abs_mul, abs_of_nonneg hb.1]
+     _ ≤ 3 * frequencyL1 m n := by
+       unfold frequencyL1
+-      nlinarith [mul_le_mul_of_nonneg_right sqrt_two_le_two (abs_nonneg (m : ℝ)),
++      nlinarith [mul_le_mul_of_nonneg_right hb.2 (abs_nonneg (m : ℝ)),
+         abs_nonneg (n : ℝ)]
+ 
+ theorem frequencyL1_le_twice_length (m n : ℤ) :
+@@ -168,7 +203,7 @@ theorem lower_of_conjugate_bound {a b D : ℝ} (hprod : 1 ≤ |a| * |b|)
+   apply (div_le_iff₀ hD).mpr
+   exact hprod.trans (mul_le_mul_of_nonneg_left hb (abs_nonneg a))
+ 
+-/-- Explicit Diophantine bound for `v_r = (1,1-sqrt 2)` in the L1 length. -/
++/-- Preserve the original 1/3 L1 Fourier bound in the golden chart. -/
+ theorem radial_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     (1 / 3 : ℝ) / (1 + frequencyL1 m n) ≤ |radialSymbol m n| := by
+   rw [div_div]
+@@ -178,7 +213,7 @@ theorem radial_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+   · have := radialConjugate_upper m n
+     linarith
+ 
+-/-- Explicit Diophantine bound for `v_t = (sqrt 2-1,1)` in the L1 length. -/
++/-- The analogous original 1/3 L1 temporal bound. -/
+ theorem time_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     (1 / 3 : ℝ) / (1 + frequencyL1 m n) ≤ |timeSymbol m n| := by
+   rw [div_div]
+@@ -188,7 +223,7 @@ theorem time_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+   · have := timeConjugate_upper m n
+     linarith
+ 
+-/-- The manuscript's estimate with an explicit constant and Euclidean length. -/
++/-- Keep original 1/6 Euclidean interface constant: safe for J_phi. -/
+ theorem radial_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     (1 / 6 : ℝ) / (1 + frequencyLength m n) ≤ |radialSymbol m n| := by
+   rw [div_div]
+@@ -199,7 +234,6 @@ theorem radial_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     have := frequencyL1_le_twice_length m n
+     linarith
+ 
+-/-- The manuscript's estimate for the second graph direction. -/
+ theorem time_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     (1 / 6 : ℝ) / (1 + frequencyLength m n) ≤ |timeSymbol m n| := by
+   rw [div_div]
+@@ -210,6 +244,9 @@ theorem time_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     have := frequencyL1_le_twice_length m n
+     linarith
+ 
++
++/-- The nonzero golden directions admit a reciprocal multiplier bound with
++    the same constant 6 as the original silver-ratio implementation. -/
+ theorem radialSymbol_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     radialSymbol m n ≠ 0 := by
+   intro hz
+@@ -222,7 +259,6 @@ theorem timeSymbol_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+   have h := time_product_lower m n hmn
+   norm_num [hz] at h
+ 
+-/-- The radial inverse Fourier multiplier grows at most linearly in frequency. -/
+ theorem radial_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     |1 / radialSymbol m n| ≤ 6 * (1 + frequencyLength m n) := by
+   rw [abs_div, abs_one]
+@@ -237,7 +273,6 @@ theorem radial_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+       mul_le_mul_of_nonneg_left hb (abs_nonneg _)
+     _ = _ := by ring
+ 
+-/-- The temporal inverse Fourier multiplier grows at most linearly in frequency. -/
+ theorem time_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+     |1 / timeSymbol m n| ≤ 6 * (1 + frequencyLength m n) := by
+   rw [abs_div, abs_one]
+@@ -252,22 +287,20 @@ theorem time_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
+       mul_le_mul_of_nonneg_left hb (abs_nonneg _)
+     _ = _ := by ring
+ 
+-/-- Repeated radial inversion has the corresponding finite polynomial loss. -/
+ theorem radial_inverse_power_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) (p : ℕ) :
+     |1 / radialSymbol m n| ^ p ≤ (6 * (1 + frequencyLength m n)) ^ p := by
+   exact pow_le_pow_left₀ (abs_nonneg _) (radial_reciprocal_bound m n hmn) p
+ 
+-/-- Repeated temporal inversion has the corresponding finite polynomial loss. -/
+ theorem time_inverse_power_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) (p : ℕ) :
+     |1 / timeSymbol m n| ^ p ≤ (6 * (1 + frequencyLength m n)) ^ p := by
+   exact pow_le_pow_left₀ (abs_nonneg _) (time_reciprocal_bound m n hmn) p
+ 
+-/-- Both estimates packaged for a nonzero integer vector. -/
++/-- Both original Euclidean Fourier bounds, exported with the old interface shape. -/
+ theorem graph_directions_diophantine (k : ℤ × ℤ) (hk : k ≠ 0) :
+     (1 / 6 : ℝ) / (1 + frequencyLength k.1 k.2) ≤
+-        |(k.1 : ℝ) + (1 - Real.sqrt 2) * (k.2 : ℝ)| ∧
++        |(k.1 : ℝ) + ((1 - Real.sqrt 5) / 2) * (k.2 : ℝ)| ∧
+       (1 / 6 : ℝ) / (1 + frequencyLength k.1 k.2) ≤
+-        |(Real.sqrt 2 - 1) * (k.1 : ℝ) + (k.2 : ℝ)| := by
++        |((Real.sqrt 5 - 1) / 2) * (k.1 : ℝ) + (k.2 : ℝ)| := by
+   have hmn : k.1 ≠ 0 ∨ k.2 ≠ 0 := by
+     by_cases hm : k.1 = 0
+     · right
+@@ -278,9 +311,9 @@ theorem graph_directions_diophantine (k : ℤ × ℤ) (hk : k ≠ 0) :
+   · simpa only [radialSymbol_formula] using radial_diophantine k.1 k.2 hmn
+   · simpa only [timeSymbol_formula] using time_diophantine k.1 k.2 hmn
+ 
+-/-- The integer matrix `[[3,1],[1,5]]` acting on a frequency. -/
++/-- The golden integer matrix acts on integer Fourier frequencies. -/
+ def coveringFrequency (k : ℤ × ℤ) : ℤ × ℤ :=
+-  (3 * k.1 + k.2, k.1 + 5 * k.2)
++  (3 * k.1 + k.2, k.1 + 4 * k.2)
+ 
+ theorem coveringFrequency_injective : Function.Injective coveringFrequency := by
+   intro k l hkl
+@@ -296,24 +329,26 @@ theorem coveringFrequency_ne_zero (k : ℤ × ℤ) (hk : k ≠ 0) :
+   apply coveringFrequency_injective
+   simpa [coveringFrequency] using hz
+ 
+-/-- The radial symbol scales by the smaller eigenvalue of the covering matrix. -/
++/-- Scaling identities required by the two directional Fourier inverses. -/
+ theorem radial_symbol_covering (k : ℤ × ℤ) :
+     radialSymbol (coveringFrequency k).1 (coveringFrequency k).2 =
+-      (4 - Real.sqrt 2) * radialSymbol k.1 k.2 := by
++      ((7 - Real.sqrt 5) / 2) * radialSymbol k.1 k.2 := by
+   simp only [coveringFrequency, radialSymbol_formula, Int.cast_add,
+     Int.cast_mul, Int.cast_ofNat]
+-  nlinarith [congrArg (fun x : ℝ => x * (k.2 : ℝ)) sqrt_two_square]
++  nlinarith [congrArg (fun x : ℝ => x * (k.2 : ℝ)) sqrt_five_square]
+ 
+-/-- The temporal symbol scales by the larger eigenvalue of the covering matrix. -/
+ theorem time_symbol_covering (k : ℤ × ℤ) :
+     timeSymbol (coveringFrequency k).1 (coveringFrequency k).2 =
+-      (4 + Real.sqrt 2) * timeSymbol k.1 k.2 := by
++      ((7 + Real.sqrt 5) / 2) * timeSymbol k.1 k.2 := by
+   simp only [coveringFrequency, timeSymbol_formula, Int.cast_add,
+     Int.cast_mul, Int.cast_ofNat]
+-  nlinarith [congrArg (fun x : ℝ => x * (k.1 : ℝ)) sqrt_two_square]
++  nlinarith [congrArg (fun x : ℝ => x * (k.1 : ℝ)) sqrt_five_square]
+ 
++/-- Both eigenvalues of the golden cover expand. -/
+ theorem covering_eigenvalues_gt_one :
+-    1 < 4 - Real.sqrt 2 ∧ 1 < 4 + Real.sqrt 2 := by
+-  constructor <;> nlinarith [sqrt_two_le_two, Real.sqrt_nonneg (2 : ℝ)]
++    1 < (7 - Real.sqrt 5) / 2 ∧ 1 < (7 + Real.sqrt 5) / 2 := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  have hs2 : Real.sqrt 5 ^ 2 = (5 : ℝ) := sqrt_five_square
++  constructor <;> nlinarith
+ 
+ end NavierStokes.DiophantineGraph
+diff --git a/NavierStokes/PhysicalGraphBounds.lean b/NavierStokes/PhysicalGraphBounds.lean
+index c6210bd..2c1da03 100644
+--- a/NavierStokes/PhysicalGraphBounds.lean
++++ b/NavierStokes/PhysicalGraphBounds.lean
+@@ -31,18 +31,18 @@ private theorem nat_le_infty (k : ℕ) : (k : WithTop ℕ∞) ≤ ∞ :=
+ 
+ abbrev Plane := ℝ × ℝ
+ 
+-noncomputable def radialDirection : Plane := (1, 1 - Real.sqrt 2)
+-noncomputable def timeDirection : Plane := (Real.sqrt 2 - 1, 1)
++noncomputable def radialDirection : Plane := (1, (1 - Real.sqrt 5) / 2)
++noncomputable def timeDirection : Plane := (((Real.sqrt 5 - 1) / 2), 1)
+ 
+ theorem cover_radialDirection :
+     SlotGeometry.cover radialDirection = ChartScales.Lambda • radialDirection := by
+   ext <;> simp [SlotGeometry.cover_apply, radialDirection, ChartScales.Lambda] <;>
+-    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
++    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 5)]
+ 
+ theorem cover_timeDirection :
+     SlotGeometry.cover timeDirection = ChartScales.Tg • timeDirection := by
+   ext <;> simp [SlotGeometry.cover_apply, timeDirection, ChartScales.Tg, SlotColoring.coverGrowth] <;>
+-    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
++    nlinarith [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 5)]
+ 
+ theorem cover_pow_radialDirection (i : ℕ) :
+     (SlotGeometry.cover ^ i) radialDirection = ChartScales.Lambda ^ i • radialDirection := by
+@@ -554,16 +554,16 @@ theorem graphRestriction_jet_bound {E : Type*} [NormedAddCommGroup E] [NormedSpa
+ 
+ /-- The dual coordinate along `v_t` in the manuscript's slot rectangle. -/
+ noncomputable def etaCoordinate : Plane →L[ℝ] ℝ :=
+-  (1 + (Real.sqrt 2 - 1) ^ 2)⁻¹ •
+-    ((Real.sqrt 2 - 1) • ContinuousLinearMap.fst ℝ ℝ ℝ + ContinuousLinearMap.snd ℝ ℝ ℝ)
++  (1 + (((Real.sqrt 5 - 1) / 2)) ^ 2)⁻¹ •
++    ((((Real.sqrt 5 - 1) / 2)) • ContinuousLinearMap.fst ℝ ℝ ℝ + ContinuousLinearMap.snd ℝ ℝ ℝ)
+ 
+ theorem etaCoordinate_radial : etaCoordinate radialDirection = 0 := by
+   simp [etaCoordinate, radialDirection, smul_eq_mul]
+   ring
+ 
+ theorem etaCoordinate_time : etaCoordinate timeDirection = 1 := by
+-  have hd : 1 + (Real.sqrt 2 - 1) ^ 2 ≠ 0 := by positivity
+-  change (1 + (Real.sqrt 2 - 1) ^ 2)⁻¹ * ((Real.sqrt 2 - 1) * (Real.sqrt 2 - 1) + 1) = 1
++  have hd : 1 + (((Real.sqrt 5 - 1) / 2)) ^ 2 ≠ 0 := by positivity
++  change (1 + (((Real.sqrt 5 - 1) / 2)) ^ 2)⁻¹ * ((((Real.sqrt 5 - 1) / 2)) * (((Real.sqrt 5 - 1) / 2)) + 1) = 1
+   field_simp ; ring
+ 
+ theorem etaCoordinate_nativeGraph (h : ℝ) (n : ℕ) (p : SpaceTime) :
+diff --git a/NavierStokes/PrimaryFieldAssembly.lean b/NavierStokes/PrimaryFieldAssembly.lean
+index da0ab75..4943ff9 100644
+--- a/NavierStokes/PrimaryFieldAssembly.lean
++++ b/NavierStokes/PrimaryFieldAssembly.lean
+@@ -735,7 +735,7 @@ end CoefficientAssembly
+ /-! ## The angular covariance is a genuine function on the auxiliary torus -/
+ 
+ private noncomputable def latticeCover (k : TorusInverse.Frequency) : TorusInverse.Frequency :=
+-  (3 * k.1 + k.2, k.1 + 5 * k.2)
++  (3 * k.1 + k.2, k.1 + 4 * k.2)
+ 
+ private theorem covering_add_lattice (Y : Plane) (k : TorusInverse.Frequency) :
+     TorusAverages.covering (Y + TorusAverages.latticePoint k) =
+diff --git a/NavierStokes/SlotColoring.lean b/NavierStokes/SlotColoring.lean
+index 55c3ebd..f1c7975 100644
+--- a/NavierStokes/SlotColoring.lean
++++ b/NavierStokes/SlotColoring.lean
+@@ -308,12 +308,12 @@ theorem neighbors_card_le (D : ℝ) (L : Label) : (neighbors D L).card ≤ degre
+ theorem label_type_countable : Countable Label := by infer_instance
+ 
+ /-- The expanding eigenvalue of the actual covering matrix. -/
+-def coverGrowth : ℝ := 4 + Real.sqrt 2
++def coverGrowth : ℝ := (7 + Real.sqrt 5) / 2
+ 
+ theorem log_coverGrowth_pos : 0 < Real.log coverGrowth := by
+   apply Real.log_pos
+   unfold coverGrowth
+-  linarith [Real.sqrt_nonneg (2 : ℝ)]
++  linarith [Real.sqrt_nonneg (5 : ℝ)]
+ 
+ /-- The real expression whose floor defines the manuscript's native index. -/
+ def nativeArgument (h : ℝ) (n : ℕ) : ℝ :=
+diff --git a/NavierStokes/SlotGeometry.lean b/NavierStokes/SlotGeometry.lean
+index 6ed4e61..28739bd 100644
+--- a/NavierStokes/SlotGeometry.lean
++++ b/NavierStokes/SlotGeometry.lean
+@@ -13,7 +13,7 @@ import Mathlib.Tactic.Abel
+ # Rational auxiliary slots separated under bounded covering powers
+ 
+ This file constructs the rational centers required in Lemma 8.3 for the
+-specific covering matrix `J = [[3,1],[1,5]]`. The centers are explicit.
++specific covering matrix `J = [[3,1],[1,4]]`. The centers are explicit.
+ Finite-dimensional continuity then gives a single positive rectangle radius,
+ including padding and injectivity modulo the integer lattice.
+ -/
+@@ -30,10 +30,10 @@ abbrev Plane := ℝ × ℝ
+ /-- The actual integer covering matrix from the manuscript. -/
+ def cover : Plane →L[ℝ] Plane :=
+   (3 • ContinuousLinearMap.fst ℝ ℝ ℝ + ContinuousLinearMap.snd ℝ ℝ ℝ).prod
+-    (ContinuousLinearMap.fst ℝ ℝ ℝ + 5 • ContinuousLinearMap.snd ℝ ℝ ℝ)
++    (ContinuousLinearMap.fst ℝ ℝ ℝ + 4 • ContinuousLinearMap.snd ℝ ℝ ℝ)
+ 
+ @[simp] theorem cover_apply (x : Plane) :
+-    cover x = (3 * x.1 + x.2, x.1 + 5 * x.2) := by
++    cover x = (3 * x.1 + x.2, x.1 + 4 * x.2) := by
+   simp [cover]
+ 
+ theorem cover_injective : Function.Injective cover := by
+@@ -55,14 +55,14 @@ theorem norm_cover_le (x : Plane) : ‖cover x‖ ≤ 6 * ‖x‖ := by
+   have hx : |x.1| ≤ ‖x‖ := le_max_left _ _
+   have hy : |x.2| ≤ ‖x‖ := le_max_right _ _
+   rw [cover_apply]
+-  change max |3 * x.1 + x.2| |x.1 + 5 * x.2| ≤ 6 * ‖x‖
++  change max |3 * x.1 + x.2| |x.1 + 4 * x.2| ≤ 6 * ‖x‖
+   apply max_le
+   · calc
+       |3 * x.1 + x.2| ≤ |3 * x.1| + |x.2| := abs_add_le _ _
+       _ ≤ 6 * ‖x‖ := by rw [abs_mul]; norm_num; linarith [norm_nonneg x]
+   · calc
+-      |x.1 + 5 * x.2| ≤ |x.1| + |5 * x.2| := abs_add_le _ _
+-      _ ≤ 6 * ‖x‖ := by rw [abs_mul]; norm_num; linarith
++      |x.1 + 4 * x.2| ≤ |x.1| + |4 * x.2| := abs_add_le _ _
++      _ ≤ 6 * ‖x‖ := by rw [abs_mul]; norm_num; linarith [norm_nonneg x]
+ 
+ theorem norm_cover_pow_le (n : ℕ) (x : Plane) :
+     ‖(cover ^ n) x‖ ≤ (6 : ℝ) ^ n * ‖x‖ := by
+@@ -336,7 +336,7 @@ theorem torusEq_trans {x y z : Plane} (hxy : torusEq x y) (hyz : torusEq y z) :
+ /-- The covering preserves the integer lattice and therefore torus equality. -/
+ theorem cover_torusEq {x y : Plane} (h : torusEq x y) : torusEq (cover x) (cover y) := by
+   rcases h with ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
+-  refine ⟨⟨3 * a + b, ?_⟩, ⟨a + 5 * b, ?_⟩⟩
++  refine ⟨⟨3 * a + b, ?_⟩, ⟨a + 4 * b, ?_⟩⟩
+   · push_cast
+     simp only [Prod.fst_sub, cover_apply]
+     dsimp at ha hb ⊢
+diff --git a/NavierStokes/TemporalMeanUpdate.lean b/NavierStokes/TemporalMeanUpdate.lean
+index 6f10c86..2ab9c23 100644
+--- a/NavierStokes/TemporalMeanUpdate.lean
++++ b/NavierStokes/TemporalMeanUpdate.lean
+@@ -145,7 +145,7 @@ theorem timeDerivative_unique {f g : Plane → ℂ} (hf : ContDiff ℝ ∞ f) (h
+ /-- The actual integer covering as a continuous linear map. -/
+ noncomputable def coverLinear : Plane →L[ℝ] Plane :=
+   ((3 : ℝ) • ContinuousLinearMap.fst ℝ ℝ ℝ + ContinuousLinearMap.snd ℝ ℝ ℝ).prod
+-    (ContinuousLinearMap.fst ℝ ℝ ℝ + (5 : ℝ) • ContinuousLinearMap.snd ℝ ℝ ℝ)
++    (ContinuousLinearMap.fst ℝ ℝ ℝ + (4 : ℝ) • ContinuousLinearMap.snd ℝ ℝ ℝ)
+ 
+ theorem coverLinear_apply (z : Plane) : coverLinear z = TorusAverages.covering z := by
+   simp [coverLinear, TorusAverages.covering]
+@@ -166,7 +166,7 @@ theorem coverLinear_temporal :
+     coverLinear (vector .temporal) = ChartScales.Tg • vector .temporal := by
+   rw [coverLinear_apply]
+   ext <;> dsimp [TorusAverages.covering, vector, ChartScales.Tg, SlotColoring.coverGrowth]
+-  · nlinarith [DiophantineGraph.sqrt_two_square]
++  · nlinarith [DiophantineGraph.sqrt_five_square]
+   · ring
+ 
+ theorem coverMap_temporal (n : ℕ) :
+@@ -1229,8 +1229,8 @@ theorem axialAlias_superflat {a b d cL cR h α : ℝ}
+ 
+ omit [FiniteDimensional ℝ S] [NormedSpace ℝ S] in
+ theorem temporalVector_norm_le_one : ‖((0 : ℝ), ((0 : S), vector .temporal))‖ ≤ 1 := by
+-  have ha : |Real.sqrt 2 - 1| ≤ 1 := abs_le.mpr
+-    ⟨by linarith [Real.sqrt_nonneg (2 : ℝ)], by linarith [ChartScales.sqrt_two_lt_two]⟩
++  have ha : |((Real.sqrt 5 - 1) / 2)| ≤ 1 := abs_le.mpr
++    ⟨by linarith [Real.sqrt_nonneg (5 : ℝ)], by linarith [ChartScales.sqrt_five_lt_three]⟩
+   simp only [Prod.norm_def, vector, norm_zero, Real.norm_eq_abs, abs_one]
+   exact max_le zero_le_one (max_le zero_le_one (max_le ha le_rfl))
+ 
+diff --git a/NavierStokes/TorusAverages.lean b/NavierStokes/TorusAverages.lean
+index 7cc9e2e..c5ee896 100644
+--- a/NavierStokes/TorusAverages.lean
++++ b/NavierStokes/TorusAverages.lean
+@@ -35,11 +35,11 @@ local instance planeVolumeHaar : Measure.IsAddHaarMeasure (volume : Measure Plan
+ 
+ noncomputable def quotientPoint (z : Plane) : Torus := ((z.1 : UnitAddCircle), (z.2 : UnitAddCircle))
+ 
+-/-- The manuscript's real covering matrix `[[3,1],[1,5]]`. -/
+-noncomputable def covering (z : Plane) : Plane := (3 * z.1 + z.2, z.1 + 5 * z.2)
++/-- The manuscript's real covering matrix `[[3,1],[1,4]]`. -/
++noncomputable def covering (z : Plane) : Plane := (3 * z.1 + z.2, z.1 + 4 * z.2)
+ 
+ noncomputable def torusCovering : Torus →+ Torus where
+-  toFun z := ((3 : ℕ) • z.1 + z.2, z.1 + (5 : ℕ) • z.2)
++  toFun z := ((3 : ℕ) • z.1 + z.2, z.1 + (4 : ℕ) • z.2)
+   map_zero' := by simp
+   map_add' := by
+     intro z w
+@@ -47,7 +47,7 @@ noncomputable def torusCovering : Torus →+ Torus where
+ 
+ theorem torusCovering_continuous : Continuous torusCovering :=
+   ((continuous_fst.nsmul 3).add continuous_snd).prodMk
+-    (continuous_fst.add (continuous_snd.nsmul 5))
++    (continuous_fst.add (continuous_snd.nsmul 4))
+ 
+ theorem quotient_covering (z : Plane) :
+     quotientPoint (covering z) = torusCovering (quotientPoint z) := by
+@@ -56,20 +56,20 @@ theorem quotient_covering (z : Plane) :
+       (3 : ℕ) • (z.1 : UnitAddCircle) + (z.2 : UnitAddCircle)
+     rw [AddCircle.coe_add, ← AddCircle.coe_nsmul]
+     simp only [nsmul_eq_mul, Nat.cast_ofNat]
+-  · change (((z.1 + 5 * z.2 : ℝ) : UnitAddCircle)) =
+-      (z.1 : UnitAddCircle) + (5 : ℕ) • (z.2 : UnitAddCircle)
++  · change (((z.1 + 4 * z.2 : ℝ) : UnitAddCircle)) =
++      (z.1 : UnitAddCircle) + (4 : ℕ) • (z.2 : UnitAddCircle)
+     rw [AddCircle.coe_add, ← AddCircle.coe_nsmul]
+     simp only [nsmul_eq_mul, Nat.cast_ofNat]
+ 
+ /-- Surjectivity is explicit: choose real lifts and apply the inverse matrix
+-`(1/14)[[5,-1],[-1,3]]` before projecting to the torus. -/
++`(1/11)[[4,-1],[-1,3]]` before projecting to the torus. -/
+ theorem torusCovering_surjective : Surjective torusCovering := by
+   rintro ⟨x, y⟩
+   refine Quotient.inductionOn' x (fun a => ?_)
+   refine Quotient.inductionOn' y (fun b => ?_)
+-  refine ⟨quotientPoint ((5 * a - b) / 14, (-a + 3 * b) / 14), ?_⟩
++  refine ⟨quotientPoint ((4 * a - b) / 11, (-a + 3 * b) / 11), ?_⟩
+   rw [← quotient_covering]
+-  have heq : covering ((5 * a - b) / 14, (-a + 3 * b) / 14) = (a, b) := by
++  have heq : covering ((4 * a - b) / 11, (-a + 3 * b) / 11) = (a, b) := by
+     apply Prod.ext <;> dsimp [covering] <;> ring
+   rw [heq]
+   rfl
+diff --git a/NavierStokes/TorusCoverDegree.lean b/NavierStokes/TorusCoverDegree.lean
+index b87ba34..fdb9e5d 100644
+--- a/NavierStokes/TorusCoverDegree.lean
++++ b/NavierStokes/TorusCoverDegree.lean
+@@ -4,7 +4,7 @@ import NavierStokes.TorusCoverLattice
+ /-!
+ # Sheets of the integer torus cover
+ 
+-The actual map induced by `[[3,1],[1,5]]` has the lattice quotient as its
++The actual map induced by `[[3,1],[1,4]]` has the lattice quotient as its
+ fiber. An injective native chart lifts to one disjoint chart per lattice class.
+ -/
+ 
+@@ -204,9 +204,9 @@ def fiberEquiv (d : ℕ) (y : Plane) :
+       obtain ⟨k, hk⟩ := (covering_eq_iff_rawLift d p y).mp hp
+       exact ⟨QuotientAddGroup.mk k, Subtype.ext hk.symm⟩)
+ 
+-/-- The degree of the actual matrix cover `[[3,1],[1,5]]` after `d` steps. -/
++/-- The degree of the actual matrix cover `[[3,1],[1,4]]` after `d` steps. -/
+ theorem card_fiber (d : ℕ) (p : Torus) :
+-    Nat.card {x : Torus // torusCovering^[d] x = p} = 14 ^ d := by
++    Nat.card {x : Torus // torusCovering^[d] x = p} = 11 ^ d := by
+   obtain ⟨y, rfl⟩ := quotientPoint_surjective p
+   exact (Nat.card_congr (fiberEquiv d y)).symm.trans (card_sheet d)
+ 
+@@ -283,7 +283,7 @@ degree of the covering, not merely an upper bound on the number of labels. -/
+ theorem card_liftedRectangles_of_injOn (g : Geometry) {r : ℝ} (hr : 0 < r)
+     (hchart : InjOn quotientPoint
+       ((fun z => g.center + g.basis z) '' Metric.ball (0 : Plane) r)) :
+-    Nat.card (Set.range (sheetRectangle g r)) = 14 ^ g.gap := by
++    Nat.card (Set.range (sheetRectangle g r)) = 11 ^ g.gap := by
+   have hinj : Injective (sheetRectangle g r) := by
+     intro i j hij
+     by_contra hne
+@@ -295,14 +295,14 @@ theorem card_liftedRectangles_of_injOn (g : Geometry) {r : ℝ} (hr : 0 < r)
+ 
+ theorem card_liftedRectangles (g : Geometry) {r : ℝ} (hr : 0 < r)
+     (hsmall : ‖(g.basis : Plane →L[ℝ] Plane)‖ * r < 1 / 2) :
+-    Nat.card (Set.range (sheetRectangle g r)) = 14 ^ g.gap :=
++    Nat.card (Set.range (sheetRectangle g r)) = 11 ^ g.gap :=
+   card_liftedRectangles_of_injOn g hr
+     (quotientPoint_injOn_small_chart g.basis g.center r hsmall)
+ 
+ theorem card_liftedRectangles_le (g : Geometry) {r : ℝ} (hr : 0 < r)
+     (hsmall : ‖(g.basis : Plane →L[ℝ] Plane)‖ * r < 1 / 2)
+     {maximumGap : ℕ} (hgap : g.gap ≤ maximumGap) :
+-    Nat.card (Set.range (sheetRectangle g r)) ≤ 14 ^ maximumGap := by
++    Nat.card (Set.range (sheetRectangle g r)) ≤ 11 ^ maximumGap := by
+   rw [card_liftedRectangles g hr hsmall]
+   exact Nat.pow_le_pow_right (by decide) hgap
+ 
+diff --git a/NavierStokes/TorusCoverLattice.lean b/NavierStokes/TorusCoverLattice.lean
+index e59e747..b56eba4 100644
+--- a/NavierStokes/TorusCoverLattice.lean
++++ b/NavierStokes/TorusCoverLattice.lean
+@@ -21,12 +21,12 @@ theorem indexHom_injective : Function.Injective indexHom := by
+   have h₁ := congrArg Prod.fst h
+   have h₂ := congrArg Prod.snd h
+   change 3 * x.1 + x.2 = 3 * y.1 + y.2 at h₁
+-  change x.1 + 5 * x.2 = y.1 + 5 * y.2 at h₂
++  change x.1 + 4 * x.2 = y.1 + 4 * y.2 at h₂
+   ext <;> omega
+ 
+ /-- The quotient coordinate detecting the image of the cover matrix. -/
+-def residueHom : Frequency →+ ZMod 14 where
+-  toFun k := (k.2 : ZMod 14) - 5 * (k.1 : ZMod 14)
++def residueHom : Frequency →+ ZMod 11 where
++  toFun k := (k.2 : ZMod 11) - 4 * (k.1 : ZMod 11)
+   map_zero' := by simp
+   map_add' x y := by simp only [Prod.fst_add, Prod.snd_add, Int.cast_add]; ring
+ 
+@@ -39,16 +39,16 @@ theorem indexHom_range_eq_ker : indexHom.range = residueHom.ker := by
+   ext k
+   constructor
+   · rintro ⟨n, rfl⟩
+-    change ((n.1 + 5 * n.2 : ℤ) : ZMod 14) -
+-      5 * ((3 * n.1 + n.2 : ℤ) : ZMod 14) = 0
++    change ((n.1 + 4 * n.2 : ℤ) : ZMod 11) -
++      4 * ((3 * n.1 + n.2 : ℤ) : ZMod 11) = 0
+     push_cast
+     calc
+-      _ = -(14 : ZMod 14) * (n.1 : ZMod 14) := by ring
++      _ = -(11 : ZMod 11) * (n.1 : ZMod 11) := by ring
+       _ = 0 := by
+-        have h14 : (14 : ZMod 14) = 0 := ZMod.natCast_self 14
+-        rw [h14, neg_zero, zero_mul]
++        have h11 : (11 : ZMod 11) = 0 := ZMod.natCast_self 11
++        rw [h11, neg_zero, zero_mul]
+   · intro hk
+-    have hzero : ((k.2 - 5 * k.1 : ℤ) : ZMod 14) = 0 := by
++    have hzero : ((k.2 - 4 * k.1 : ℤ) : ZMod 11) = 0 := by
+       simpa [residueHom] using hk
+     obtain ⟨q, hq⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hzero
+     refine ⟨(-q, k.1 + 3 * q), ?_⟩
+@@ -56,7 +56,7 @@ theorem indexHom_range_eq_ker : indexHom.range = residueHom.ker := by
+     ext <;> simp [indexMap]
+     omega
+ 
+-theorem indexHom_range_index : indexHom.range.index = 14 := by
++theorem indexHom_range_index : indexHom.range.index = 11 := by
+   rw [indexHom_range_eq_ker, AddSubgroup.index_ker,
+     residueHom.range_eq_top_of_surjective residueHom_surjective]
+   simp
+@@ -91,7 +91,7 @@ theorem coverRange_succ (d : ℕ) :
+     coverRange (d + 1) = (coverRange d).map indexHom :=
+   AddMonoidHom.range_comp indexHom (coverHom d)
+ 
+-theorem coverRange_index (d : ℕ) : (coverRange d).index = 14 ^ d := by
++theorem coverRange_index (d : ℕ) : (coverRange d).index = 11 ^ d := by
+   induction d with
+   | zero =>
+       have h : coverRange 0 = ⊤ := by
+@@ -105,7 +105,7 @@ theorem coverRange_index (d : ℕ) : (coverRange d).index = 14 ^ d := by
+ /-- The distinct sheets of the `d`-step cover. -/
+ abbrev Sheet (d : ℕ) := Frequency ⧸ coverRange d
+ 
+-theorem card_sheet (d : ℕ) : Nat.card (Sheet d) = 14 ^ d := coverRange_index d
++theorem card_sheet (d : ℕ) : Nat.card (Sheet d) = 11 ^ d := coverRange_index d
+ 
+ instance finite_sheet (d : ℕ) : Finite (Sheet d) :=
+   Nat.finite_of_card_ne_zero (by rw [card_sheet]; positivity)
+diff --git a/NavierStokes/TorusInverse.lean b/NavierStokes/TorusInverse.lean
+index 4ab2359..4779e72 100644
+--- a/NavierStokes/TorusInverse.lean
++++ b/NavierStokes/TorusInverse.lean
+@@ -193,8 +193,8 @@ inductive Direction
+   deriving DecidableEq
+ 
+ def vector : Direction → Plane
+-  | .radial => (1, 1 - Real.sqrt 2)
+-  | .temporal => (Real.sqrt 2 - 1, 1)
++  | .radial => (1, (1 - Real.sqrt 5) / 2)
++  | .temporal => (((Real.sqrt 5 - 1) / 2), 1)
+ 
+ def symbol : Direction → Frequency → ℝ
+   | .radial, k => DiophantineGraph.radialSymbol k.1 k.2
+diff --git a/NavierStokes/GoldenEigenGeometry.lean b/NavierStokes/GoldenEigenGeometry.lean
+new file mode 100644
+--- /dev/null
++++ b/NavierStokes/GoldenEigenGeometry.lean
+@@ -0,0 +1,108 @@
++import Mathlib.Analysis.SpecialFunctions.Sqrt
++import Mathlib.Tactic
++
++/-!
++Golden version of the 2D auxiliary covering eigendata, independent of the
++full Navier–Stokes PDE. Verified with Lean 4.34.0-rc2 on 2026-10-08.
++This standalone module does not establish the full PDE substitution.
++-/
++noncomputable section
++namespace GoldenEigenGeometry
++
++abbrev Plane := ℝ × ℝ
++
++def b : ℝ := (Real.sqrt 5 - 1) / 2
++def smallEigenvalue : ℝ := (7 - Real.sqrt 5) / 2
++def largeEigenvalue : ℝ := (7 + Real.sqrt 5) / 2
++
++def radial : Plane := (1, -b)
++def temporal : Plane := (b, 1)
++def cover (z : Plane) : Plane := (3 * z.1 + z.2, z.1 + 4 * z.2)
++
++theorem sqrt_five_sq : (Real.sqrt 5) ^ 2 = (5 : ℝ) :=
++  Real.sq_sqrt (by norm_num)
++
++theorem b_quadratic : b ^ 2 + b = 1 := by
++  unfold b
++  nlinarith [sqrt_five_sq]
++
++theorem b_pos : 0 < b := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  unfold b
++  nlinarith [sqrt_five_sq]
++
++theorem b_lt_one : b < 1 := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  unfold b
++  nlinarith [sqrt_five_sq]
++
++theorem eigenvalue_product : smallEigenvalue * largeEigenvalue = 11 := by
++  unfold smallEigenvalue largeEigenvalue
++  nlinarith [sqrt_five_sq]
++
++theorem smallEigenvalue_gt_two : 2 < smallEigenvalue := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  unfold smallEigenvalue
++  nlinarith [sqrt_five_sq]
++
++theorem largeEigenvalue_gt_one : 1 < largeEigenvalue := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  unfold largeEigenvalue
++  nlinarith [sqrt_five_sq]
++
++theorem cover_radial :
++    cover radial = (smallEigenvalue * radial.1, smallEigenvalue * radial.2) := by
++  apply Prod.ext
++  · simp [cover, radial, b, smallEigenvalue]
++    ring
++  · dsimp [cover, radial, smallEigenvalue, b]
++    nlinarith [sqrt_five_sq]
++
++theorem cover_temporal :
++    cover temporal = (largeEigenvalue * temporal.1, largeEigenvalue * temporal.2) := by
++  apply Prod.ext
++  · dsimp [cover, temporal, largeEigenvalue, b]
++    nlinarith [sqrt_five_sq]
++  · dsimp [cover, temporal, largeEigenvalue, b]
++    ring
++
++theorem eigenvectors_orthogonal : radial.1 * temporal.1 + radial.2 * temporal.2 = 0 := by
++  simp [radial, temporal]
++
++theorem eigenbasis_determinant_pos : 0 < radial.1 * temporal.2 - radial.2 * temporal.1 := by
++  simp [radial, temporal]
++  nlinarith [sq_nonneg b]
++
++/-- The same coarse 6-L∞-norm operator estimate as in the original matrix. -/
++theorem cover_norm_infty_bound (x : Plane) :
++    max |(cover x).1| |(cover x).2| ≤
++      6 * max |x.1| |x.2| := by
++  have hx : |x.1| ≤ max |x.1| |x.2| := le_max_left _ _
++  have hy : |x.2| ≤ max |x.1| |x.2| := le_max_right _ _
++  have hmax : 0 ≤ max |x.1| |x.2| := (abs_nonneg x.1).trans hx
++  simp only [cover]
++  apply max_le
++  · calc
++      |3 * x.1 + x.2| ≤ |3 * x.1| + |x.2| := abs_add_le _ _
++      _ ≤ 6 * max |x.1| |x.2| := by rw [abs_mul]; norm_num; linarith
++  · calc
++      |x.1 + 4 * x.2| ≤ |x.1| + |4 * x.2| := abs_add_le _ _
++      _ ≤ 6 * max |x.1| |x.2| := by rw [abs_mul]; norm_num; linarith
++
++/-- New: the golden covering has sharp L-infinity operator norm at most 5. -/
++theorem cover_norm_infty_sharp (x : Plane) :
++    max |(cover x).1| |(cover x).2| ≤
++      5 * max |x.1| |x.2| := by
++  have hx : |x.1| ≤ max |x.1| |x.2| := le_max_left _ _
++  have hy : |x.2| ≤ max |x.1| |x.2| := le_max_right _ _
++  have hmax : 0 ≤ max |x.1| |x.2| := (abs_nonneg x.1).trans hx
++  simp only [cover]
++  apply max_le
++  · calc
++      |3 * x.1 + x.2| ≤ |3 * x.1| + |x.2| := abs_add_le _ _
++      _ ≤ 5 * max |x.1| |x.2| := by rw [abs_mul]; norm_num; linarith
++  · calc
++      |x.1 + 4 * x.2| ≤ |x.1| + |4 * x.2| := abs_add_le _ _
++      _ ≤ 5 * max |x.1| |x.2| := by rw [abs_mul]; norm_num; linarith
++
++end GoldenEigenGeometry
+diff --git a/NavierStokes/GoldenDiophantineGraph.lean b/NavierStokes/GoldenDiophantineGraph.lean
+new file mode 100644
+--- /dev/null
++++ b/NavierStokes/GoldenDiophantineGraph.lean
+@@ -0,0 +1,354 @@
++import Mathlib.NumberTheory.Real.Irrational
++import Mathlib.Tactic.FieldSimp
++import Mathlib.Tactic.Linarith
++import Mathlib.Tactic.NormNum
++import Mathlib.Tactic.Positivity
++import Mathlib.Tactic.Ring
++import Lean.Elab.Tactic.Omega
++
++/-!
++Golden matrix Fourier non-resonance and quantitative small-divisor estimates.
++Standalone candidate to migrate into the original DiophantineGraph.lean.
++Verified with Lean 4.34.0-rc2 on 2026-10-08. Integration into the full
++Navier–Stokes construction remains unproved.
++-/
++
++noncomputable section
++namespace GoldenDiophantineGraph
++
++def quadraticForm (p q : ℤ) : ℝ := (p : ℝ) + Real.sqrt 5 * (q : ℝ)
++
++def integerNorm (p q : ℤ) : ℤ := p ^ 2 - 5 * q ^ 2
++
++theorem sqrt_five_square : (Real.sqrt 5) ^ 2 = (5 : ℝ) :=
++  Real.sq_sqrt (by norm_num)
++
++theorem sqrt_five_le_three : Real.sqrt 5 ≤ (3 : ℝ) := by
++  nlinarith [sqrt_five_square, Real.sqrt_nonneg (5 : ℝ)]
++
++theorem quadraticForm_ne_zero (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
++    quadraticForm p q ≠ 0 := by
++  by_cases hq : q = 0
++  · have hp : p ≠ 0 := hpq.resolve_right (not_not.mpr hq)
++    simpa [quadraticForm, hq] using hp
++  · have hi : Irrational (Real.sqrt 5) :=
++      (show Nat.Prime 5 by decide).irrational_sqrt
++    have hne := hi.ne_rational (-p) q
++    intro hz
++    apply hne
++    have hq' : (q : ℝ) ≠ 0 := by exact_mod_cast hq
++    apply (eq_div_iff hq').mpr
++    dsimp [quadraticForm] at hz
++    push_cast
++    nlinarith
++
++theorem conjugate_product (p q : ℤ) :
++    quadraticForm p q * quadraticForm p (-q) = (integerNorm p q : ℝ) := by
++  simp only [quadraticForm, integerNorm, Int.cast_neg, Int.cast_sub,
++    Int.cast_pow, Int.cast_mul, Int.cast_ofNat]
++  nlinarith [congrArg (fun x : ℝ => x * (q : ℝ) ^ 2) sqrt_five_square]
++
++theorem integerNorm_ne_zero (p q : ℤ) (hpq : p ≠ 0 ∨ q ≠ 0) :
++    integerNorm p q ≠ 0 := by
++  have hconj : p ≠ 0 ∨ -q ≠ 0 := by
++    rcases hpq with hp | hq
++    · exact Or.inl hp
++    · exact Or.inr (neg_ne_zero.mpr hq)
++  have hprod := mul_ne_zero (quadraticForm_ne_zero p q hpq)
++    (quadraticForm_ne_zero p (-q) hconj)
++  intro hz
++  apply hprod
++  rw [conjugate_product, hz, Int.cast_zero]
++
++/-! The correct golden symbols use (2m+n, -n), not the old silver symbols. -/
++def radialSymbol (m n : ℤ) : ℝ := quadraticForm (2 * m + n) (-n) / 2
++def timeSymbol (m n : ℤ) : ℝ := quadraticForm (2 * n - m) m / 2
++
++def radialConjugate (m n : ℤ) : ℝ := quadraticForm (2 * m + n) n / 2
++def timeConjugate (m n : ℤ) : ℝ := quadraticForm (2 * n - m) (-m) / 2
++
++def goldenNorm (m n : ℤ) : ℤ := m ^ 2 + m * n - n ^ 2
++
++theorem radialSymbol_formula (m n : ℤ) :
++    radialSymbol m n = (m : ℝ) + ((1 - Real.sqrt 5) / 2) * (n : ℝ) := by
++  simp [radialSymbol, quadraticForm]
++  ring
++
++theorem timeSymbol_formula (m n : ℤ) :
++    timeSymbol m n = ((Real.sqrt 5 - 1) / 2) * (m : ℝ) + (n : ℝ) := by
++  simp [timeSymbol, quadraticForm]
++  ring
++
++theorem radialConjugate_formula (m n : ℤ) :
++    radialConjugate m n = (m : ℝ) + ((1 + Real.sqrt 5) / 2) * (n : ℝ) := by
++  simp [radialConjugate, quadraticForm]
++  ring
++
++theorem timeConjugate_formula (m n : ℤ) :
++    timeConjugate m n = (n : ℝ) - ((1 + Real.sqrt 5) / 2) * (m : ℝ) := by
++  simp [timeConjugate, quadraticForm]
++  ring
++
++theorem radial_product_formula (m n : ℤ) :
++    radialSymbol m n * radialConjugate m n = (goldenNorm m n : ℝ) := by
++  rw [radialSymbol_formula, radialConjugate_formula]
++  simp [goldenNorm]
++  nlinarith [congrArg (fun x : ℝ => x * (n : ℝ) ^ 2) sqrt_five_square]
++
++theorem time_product_formula (m n : ℤ) :
++    timeSymbol m n * timeConjugate m n =
++      ((n ^ 2 - n * m - m ^ 2 : ℤ) : ℝ) := by
++  rw [timeSymbol_formula, timeConjugate_formula]
++  push_cast
++  nlinarith [congrArg (fun x : ℝ => x * (m : ℝ) ^ 2) sqrt_five_square]
++
++theorem goldenNorm_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    goldenNorm m n ≠ 0 := by
++  have hpq : 2 * m + n ≠ 0 ∨ -n ≠ 0 := by
++    by_cases hn : n = 0
++    · left
++      have hm : m ≠ 0 := hmn.resolve_right (not_not.mpr hn)
++      omega
++    · exact Or.inr (neg_ne_zero.mpr hn)
++  have hpq' : 2 * m + n ≠ 0 ∨ n ≠ 0 := by
++    rcases hpq with hp | hn
++    · exact Or.inl hp
++    · exact Or.inr (neg_ne_zero.mp hn)
++  have hr : radialSymbol m n ≠ 0 :=
++    div_ne_zero (quadraticForm_ne_zero _ _ hpq) (by norm_num)
++  have hc : radialConjugate m n ≠ 0 :=
++    div_ne_zero (quadraticForm_ne_zero _ _ hpq') (by norm_num)
++  intro hz
++  have hprod := radial_product_formula m n
++  rw [hz, Int.cast_zero] at hprod
++  exact (mul_ne_zero hr hc) hprod
++
++theorem radial_product_lower (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    1 ≤ |radialSymbol m n| * |radialConjugate m n| := by
++  have hi : (1 : ℤ) ≤ |goldenNorm m n| :=
++    Int.add_one_le_iff.mpr (abs_pos.mpr (goldenNorm_ne_zero m n hmn))
++  have hr : (1 : ℝ) ≤ |(goldenNorm m n : ℝ)| := by exact_mod_cast hi
++  rw [← radial_product_formula, abs_mul] at hr
++  exact hr
++
++theorem time_product_lower (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    1 ≤ |timeSymbol m n| * |timeConjugate m n| := by
++  have hnorm : n ^ 2 - n * m - m ^ 2 = -(goldenNorm m n) := by
++    unfold goldenNorm
++    ring
++  have hi : (1 : ℤ) ≤ |n ^ 2 - n * m - m ^ 2| := by
++    rw [hnorm, abs_neg]
++    exact Int.add_one_le_iff.mpr (abs_pos.mpr (goldenNorm_ne_zero m n hmn))
++  have hr : (1 : ℝ) ≤ |((n ^ 2 - n * m - m ^ 2 : ℤ) : ℝ)| := by exact_mod_cast hi
++  rw [← time_product_formula, abs_mul] at hr
++  exact hr
++
++def frequencyL1 (m n : ℤ) : ℝ := |(m : ℝ)| + |(n : ℝ)|
++def frequencyLength (m n : ℤ) : ℝ := Real.sqrt ((m : ℝ) ^ 2 + (n : ℝ) ^ 2)
++
++theorem frequencyL1_nonneg (m n : ℤ) : 0 ≤ frequencyL1 m n := by
++  unfold frequencyL1
++  positivity
++
++theorem frequencyLength_nonneg (m n : ℤ) : 0 ≤ frequencyLength m n :=
++  Real.sqrt_nonneg _
++
++theorem radialConjugate_upper (m n : ℤ) :
++    |radialConjugate m n| ≤ 3 * frequencyL1 m n := by
++  rw [radialConjugate_formula]
++  have hb : 0 ≤ (1 + Real.sqrt 5) / 2 ∧ (1 + Real.sqrt 5) / 2 ≤ 3 := by
++    constructor <;> nlinarith [sqrt_five_le_three, Real.sqrt_nonneg (5 : ℝ)]
++  calc
++    |(m : ℝ) + ((1 + Real.sqrt 5) / 2) * (n : ℝ)| ≤
++        |(m : ℝ)| + |((1 + Real.sqrt 5) / 2) * (n : ℝ)| := abs_add_le _ _
++    _ = |(m : ℝ)| + ((1 + Real.sqrt 5) / 2) * |(n : ℝ)| := by
++      rw [abs_mul, abs_of_nonneg hb.1]
++    _ ≤ 3 * frequencyL1 m n := by
++      unfold frequencyL1
++      nlinarith [mul_le_mul_of_nonneg_right hb.2 (abs_nonneg (n : ℝ)),
++        abs_nonneg (m : ℝ)]
++
++theorem timeConjugate_upper (m n : ℤ) :
++    |timeConjugate m n| ≤ 3 * frequencyL1 m n := by
++  rw [timeConjugate_formula]
++  have hb : 0 ≤ (1 + Real.sqrt 5) / 2 ∧ (1 + Real.sqrt 5) / 2 ≤ 3 := by
++    constructor <;> nlinarith [sqrt_five_le_three, Real.sqrt_nonneg (5 : ℝ)]
++  calc
++    |(n : ℝ) - ((1 + Real.sqrt 5) / 2) * (m : ℝ)| ≤
++        |(n : ℝ)| + |((1 + Real.sqrt 5) / 2) * (m : ℝ)| := abs_sub _ _
++    _ = |(n : ℝ)| + ((1 + Real.sqrt 5) / 2) * |(m : ℝ)| := by
++      rw [abs_mul, abs_of_nonneg hb.1]
++    _ ≤ 3 * frequencyL1 m n := by
++      unfold frequencyL1
++      nlinarith [mul_le_mul_of_nonneg_right hb.2 (abs_nonneg (m : ℝ)),
++        abs_nonneg (n : ℝ)]
++
++theorem frequencyL1_le_twice_length (m n : ℤ) :
++    frequencyL1 m n ≤ 2 * frequencyLength m n := by
++  have hs : frequencyLength m n ^ 2 = (m : ℝ) ^ 2 + (n : ℝ) ^ 2 :=
++    Real.sq_sqrt (by positivity)
++  have hm : |(m : ℝ)| ≤ frequencyLength m n := by
++    apply (sq_le_sq₀ (abs_nonneg _) (frequencyLength_nonneg m n)).mp
++    rw [sq_abs, hs]
++    nlinarith [sq_nonneg (n : ℝ)]
++  have hn : |(n : ℝ)| ≤ frequencyLength m n := by
++    apply (sq_le_sq₀ (abs_nonneg _) (frequencyLength_nonneg m n)).mp
++    rw [sq_abs, hs]
++    nlinarith [sq_nonneg (m : ℝ)]
++  unfold frequencyL1
++  linarith
++
++theorem lower_of_conjugate_bound {a b D : ℝ} (hprod : 1 ≤ |a| * |b|)
++    (hD : 0 < D) (hb : |b| ≤ D) : 1 / D ≤ |a| := by
++  apply (div_le_iff₀ hD).mpr
++  exact hprod.trans (mul_le_mul_of_nonneg_left hb (abs_nonneg a))
++
++/-- Preserve the original 1/3 L1 Fourier bound in the golden chart. -/
++theorem radial_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    (1 / 3 : ℝ) / (1 + frequencyL1 m n) ≤ |radialSymbol m n| := by
++  rw [div_div]
++  apply lower_of_conjugate_bound (radial_product_lower m n hmn)
++  · have := frequencyL1_nonneg m n
++    positivity
++  · have := radialConjugate_upper m n
++    linarith
++
++/-- The analogous original 1/3 L1 temporal bound. -/
++theorem time_diophantine_l1 (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    (1 / 3 : ℝ) / (1 + frequencyL1 m n) ≤ |timeSymbol m n| := by
++  rw [div_div]
++  apply lower_of_conjugate_bound (time_product_lower m n hmn)
++  · have := frequencyL1_nonneg m n
++    positivity
++  · have := timeConjugate_upper m n
++    linarith
++
++/-- Keep original 1/6 Euclidean interface constant: safe for J_phi. -/
++theorem radial_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    (1 / 6 : ℝ) / (1 + frequencyLength m n) ≤ |radialSymbol m n| := by
++  rw [div_div]
++  apply lower_of_conjugate_bound (radial_product_lower m n hmn)
++  · have := frequencyLength_nonneg m n
++    positivity
++  · have := radialConjugate_upper m n
++    have := frequencyL1_le_twice_length m n
++    linarith
++
++theorem time_diophantine (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    (1 / 6 : ℝ) / (1 + frequencyLength m n) ≤ |timeSymbol m n| := by
++  rw [div_div]
++  apply lower_of_conjugate_bound (time_product_lower m n hmn)
++  · have := frequencyLength_nonneg m n
++    positivity
++  · have := timeConjugate_upper m n
++    have := frequencyL1_le_twice_length m n
++    linarith
++
++
++/-- The nonzero golden directions admit a reciprocal multiplier bound with
++    the same constant 6 as the original silver-ratio implementation. -/
++theorem radialSymbol_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    radialSymbol m n ≠ 0 := by
++  intro hz
++  have h := radial_product_lower m n hmn
++  norm_num [hz] at h
++
++theorem timeSymbol_ne_zero (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    timeSymbol m n ≠ 0 := by
++  intro hz
++  have h := time_product_lower m n hmn
++  norm_num [hz] at h
++
++theorem radial_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    |1 / radialSymbol m n| ≤ 6 * (1 + frequencyLength m n) := by
++  rw [abs_div, abs_one]
++  apply (div_le_iff₀ (abs_pos.mpr (radialSymbol_ne_zero m n hmn))).mpr
++  have hb : |radialConjugate m n| ≤ 6 * (1 + frequencyLength m n) := by
++    have := radialConjugate_upper m n
++    have := frequencyL1_le_twice_length m n
++    linarith
++  calc
++    1 ≤ |radialSymbol m n| * |radialConjugate m n| := radial_product_lower m n hmn
++    _ ≤ |radialSymbol m n| * (6 * (1 + frequencyLength m n)) :=
++      mul_le_mul_of_nonneg_left hb (abs_nonneg _)
++    _ = _ := by ring
++
++theorem time_reciprocal_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) :
++    |1 / timeSymbol m n| ≤ 6 * (1 + frequencyLength m n) := by
++  rw [abs_div, abs_one]
++  apply (div_le_iff₀ (abs_pos.mpr (timeSymbol_ne_zero m n hmn))).mpr
++  have hb : |timeConjugate m n| ≤ 6 * (1 + frequencyLength m n) := by
++    have := timeConjugate_upper m n
++    have := frequencyL1_le_twice_length m n
++    linarith
++  calc
++    1 ≤ |timeSymbol m n| * |timeConjugate m n| := time_product_lower m n hmn
++    _ ≤ |timeSymbol m n| * (6 * (1 + frequencyLength m n)) :=
++      mul_le_mul_of_nonneg_left hb (abs_nonneg _)
++    _ = _ := by ring
++
++theorem radial_inverse_power_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) (p : ℕ) :
++    |1 / radialSymbol m n| ^ p ≤ (6 * (1 + frequencyLength m n)) ^ p := by
++  exact pow_le_pow_left₀ (abs_nonneg _) (radial_reciprocal_bound m n hmn) p
++
++theorem time_inverse_power_bound (m n : ℤ) (hmn : m ≠ 0 ∨ n ≠ 0) (p : ℕ) :
++    |1 / timeSymbol m n| ^ p ≤ (6 * (1 + frequencyLength m n)) ^ p := by
++  exact pow_le_pow_left₀ (abs_nonneg _) (time_reciprocal_bound m n hmn) p
++
++/-- Both original Euclidean Fourier bounds, exported with the old interface shape. -/
++theorem graph_directions_diophantine (k : ℤ × ℤ) (hk : k ≠ 0) :
++    (1 / 6 : ℝ) / (1 + frequencyLength k.1 k.2) ≤
++        |(k.1 : ℝ) + ((1 - Real.sqrt 5) / 2) * (k.2 : ℝ)| ∧
++      (1 / 6 : ℝ) / (1 + frequencyLength k.1 k.2) ≤
++        |((Real.sqrt 5 - 1) / 2) * (k.1 : ℝ) + (k.2 : ℝ)| := by
++  have hmn : k.1 ≠ 0 ∨ k.2 ≠ 0 := by
++    by_cases hm : k.1 = 0
++    · right
++      intro hn
++      exact hk (Prod.ext hm hn)
++    · exact Or.inl hm
++  constructor
++  · simpa only [radialSymbol_formula] using radial_diophantine k.1 k.2 hmn
++  · simpa only [timeSymbol_formula] using time_diophantine k.1 k.2 hmn
++
++/-- The golden integer matrix acts on integer Fourier frequencies. -/
++def coveringFrequency (k : ℤ × ℤ) : ℤ × ℤ :=
++  (3 * k.1 + k.2, k.1 + 4 * k.2)
++
++theorem coveringFrequency_injective : Function.Injective coveringFrequency := by
++  intro k l hkl
++  have h₁ := congrArg Prod.fst hkl
++  have h₂ := congrArg Prod.snd hkl
++  simp only [coveringFrequency] at h₁ h₂
++  apply Prod.ext <;> linarith
++
++theorem coveringFrequency_ne_zero (k : ℤ × ℤ) (hk : k ≠ 0) :
++    coveringFrequency k ≠ 0 := by
++  intro hz
++  apply hk
++  apply coveringFrequency_injective
++  simpa [coveringFrequency] using hz
++
++/-- Scaling identities required by the two directional Fourier inverses. -/
++theorem radial_symbol_covering (k : ℤ × ℤ) :
++    radialSymbol (coveringFrequency k).1 (coveringFrequency k).2 =
++      ((7 - Real.sqrt 5) / 2) * radialSymbol k.1 k.2 := by
++  simp only [coveringFrequency, radialSymbol_formula, Int.cast_add,
++    Int.cast_mul, Int.cast_ofNat]
++  nlinarith [congrArg (fun x : ℝ => x * (k.2 : ℝ)) sqrt_five_square]
++
++theorem time_symbol_covering (k : ℤ × ℤ) :
++    timeSymbol (coveringFrequency k).1 (coveringFrequency k).2 =
++      ((7 + Real.sqrt 5) / 2) * timeSymbol k.1 k.2 := by
++  simp only [coveringFrequency, timeSymbol_formula, Int.cast_add,
++    Int.cast_mul, Int.cast_ofNat]
++  nlinarith [congrArg (fun x : ℝ => x * (k.1 : ℝ)) sqrt_five_square]
++
++/-- Both eigenvalues of the golden cover expand. -/
++theorem covering_eigenvalues_gt_one :
++    1 < (7 - Real.sqrt 5) / 2 ∧ 1 < (7 + Real.sqrt 5) / 2 := by
++  have hs : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg _
++  have hs2 : Real.sqrt 5 ^ 2 = (5 : ℝ) := sqrt_five_square
++  constructor <;> nlinarith
++
++end GoldenDiophantineGraph
+diff --git a/NavierStokes/GoldenCoverLattice.lean b/NavierStokes/GoldenCoverLattice.lean
+new file mode 100644
+--- /dev/null
++++ b/NavierStokes/GoldenCoverLattice.lean
+@@ -0,0 +1,119 @@
++import Mathlib.GroupTheory.Index
++import Mathlib.Data.ZMod.Basic
++import Lean.Elab.Tactic.Omega
++import Mathlib.Tactic.Ring
++import Mathlib.Tactic.Positivity
++
++/-!
++Candidate replacement for the lattice-index subproof.
++Standalone independent definition of J_phi, verified with Lean 4.34.0-rc2
++on 2026-10-08. The full PDE substitution is not established by this module.
++Proof method follows the original TorusCoverLattice.lean with determinant 11.
++-/
++
++namespace GoldenCoverLattice
++
++abbrev Frequency := ℤ × ℤ
++
++def indexMap (k : Frequency) : Frequency :=
++  (3 * k.1 + k.2, k.1 + 4 * k.2)
++
++def indexHom : Frequency →+ Frequency where
++  toFun := indexMap
++  map_zero' := by ext <;> simp [indexMap]
++  map_add' x y := by ext <;> simp [indexMap] <;> ring
++
++theorem indexHom_injective : Function.Injective indexHom := by
++  intro x y h
++  have h₁ := congrArg Prod.fst h
++  have h₂ := congrArg Prod.snd h
++  change 3 * x.1 + x.2 = 3 * y.1 + y.2 at h₁
++  change x.1 + 4 * x.2 = y.1 + 4 * y.2 at h₂
++  ext <;> omega
++
++/-- The residue class y - 4x detects membership in the image lattice. -/
++def residueHom : Frequency →+ ZMod 11 where
++  toFun k := (k.2 : ZMod 11) - 4 * (k.1 : ZMod 11)
++  map_zero' := by simp
++  map_add' x y := by simp only [Prod.fst_add, Prod.snd_add, Int.cast_add]; ring
++
++theorem residueHom_surjective : Function.Surjective residueHom := by
++  intro z
++  refine ⟨(0, z.val), ?_⟩
++  simp [residueHom]
++
++theorem indexHom_range_eq_ker : indexHom.range = residueHom.ker := by
++  ext k
++  constructor
++  · rintro ⟨n, rfl⟩
++    change ((n.1 + 4 * n.2 : ℤ) : ZMod 11) -
++      4 * ((3 * n.1 + n.2 : ℤ) : ZMod 11) = 0
++    push_cast
++    calc
++      _ = -(11 : ZMod 11) * (n.1 : ZMod 11) := by ring
++      _ = 0 := by
++        have h11 : (11 : ZMod 11) = 0 := ZMod.natCast_self 11
++        rw [h11, neg_zero, zero_mul]
++  · intro hk
++    have hzero : ((k.2 - 4 * k.1 : ℤ) : ZMod 11) = 0 := by
++      simpa [residueHom] using hk
++    obtain ⟨q, hq⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hzero
++    refine ⟨(-q, k.1 + 3 * q), ?_⟩
++    change indexMap (-q, k.1 + 3 * q) = k
++    ext <;> simp [indexMap]
++    omega
++
++theorem indexHom_range_index : indexHom.range.index = 11 := by
++  rw [indexHom_range_eq_ker, AddSubgroup.index_ker,
++    residueHom.range_eq_top_of_surjective residueHom_surjective]
++  simp
++
++noncomputable def coverIndex (d : ℕ) (k : Frequency) : Frequency := indexMap^[d] k
++
++def coverHom : ℕ → Frequency →+ Frequency
++  | 0 => AddMonoidHom.id Frequency
++  | d + 1 => indexHom.comp (coverHom d)
++
++@[simp] theorem coverHom_apply (d : ℕ) (k : Frequency) :
++    coverHom d k = coverIndex d k := by
++  induction d with
++  | zero => rfl
++  | succ d ih =>
++      change indexMap (coverHom d k) = _
++      rw [ih]
++      simp only [coverIndex, Function.iterate_succ_apply']
++
++theorem coverHom_injective (d : ℕ) : Function.Injective (coverHom d) := by
++  induction d with
++  | zero => exact Function.injective_id
++  | succ d ih => exact indexHom_injective.comp ih
++
++def coverRange (d : ℕ) : AddSubgroup Frequency := (coverHom d).range
++
++@[simp] theorem mem_coverRange (d : ℕ) (k : Frequency) :
++    k ∈ coverRange d ↔ ∃ n, coverIndex d n = k := by
++  simp only [coverRange, AddMonoidHom.mem_range, coverHom_apply]
++
++theorem coverRange_succ (d : ℕ) :
++    coverRange (d + 1) = (coverRange d).map indexHom :=
++  AddMonoidHom.range_comp indexHom (coverHom d)
++
++theorem coverRange_index (d : ℕ) : (coverRange d).index = 11 ^ d := by
++  induction d with
++  | zero =>
++      have h : coverRange 0 = ⊤ := by
++        ext k
++        simp [mem_coverRange, coverIndex]
++      simp [h]
++  | succ d ih =>
++      rw [coverRange_succ, AddSubgroup.index_map_of_injective _ indexHom_injective,
++        ih, indexHom_range_index, pow_succ]
++
++abbrev Sheet (d : ℕ) := Frequency ⧸ coverRange d
++
++theorem card_sheet (d : ℕ) : Nat.card (Sheet d) = 11 ^ d := coverRange_index d
++
++instance finite_sheet (d : ℕ) : Finite (Sheet d) :=
++  Nat.finite_of_card_ne_zero (by rw [card_sheet]; positivity)
++
++end GoldenCoverLattice

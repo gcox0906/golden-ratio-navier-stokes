@@ -1,0 +1,46 @@
+REPRODUCING THE GOLDEN AUXILIARY COVERING
+
+Use a separate checkout and a named branch, preserving upstream main.
+Upstream: https://github.com/openai/NavierStokesAndEuler.git
+Base commit: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+Lean: leanprover/lean4:v4.34.0-rc2
+Mathlib: 85e3a25e006c35636f0e53b0e9296caca2685bc0
+Comparator: 19e111e2141cf333c7daff0f64c5f24acc91dd2e
+
+Example Linux commands after installing the pinned toolchain:
+  git clone https://github.com/openai/NavierStokesAndEuler.git golden-check
+  cd golden-check
+  git checkout -b golden-auxiliary-covering f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+  git apply /absolute/path/to/golden-covering.patch
+
+For the complete library and audits, the supplied script copies exactly the
+verified changes (including both audit modules), obtains the pinned cache,
+builds NavierStokes with warnings as errors, and records new logs:
+  bash /absolute/path/to/verify_golden_integration.sh /absolute/path/to/golden-check
+
+For the independent checker, install the pinned checker dependencies then run:
+  lake exe comparator ComparatorChallenges/NavierStokes.json
+
+The original NavierStokes JSON has enable_nanoda=true. Do not change the
+challenge definitions or configuration. Exact successful logs and their
+manifest are in checker-logs. checker-reproduction contains the Ubuntu 24.04
+setup, environment, source payload, sandbox wrapper and collector used for
+the recorded independent verification. Consult comparator-status.txt for
+the container seccomp substitution and its limited sandbox assurance.
+
+The recorded verification uses nanoda 3a2407216ee84a75f9e1aead6803d0578be06ae7,
+lean4export cacf989bd75f608700820f6afc595f32e7a99a4d, and
+Landrun 811cfff51ceaf3d9843708aa6d22e9b84ccac8b4.
+
+Evidence filenames:
+  technical-note.tex: short technical note; editable LaTeX source.
+  upstream-discussion.txt / discussion-preview.html: ready-to-review discussion.
+  golden-covering.patch: complete 20-module construction patch.
+  patch-validation.txt: application and source-hash match checks.
+  modules-verified.tsv / theorems-verified.tsv: module and axiom inventories.
+  integration-logs / checker-logs: original successful and diagnostic logs.
+  SHA256SUMS.json: integrity hashes for every bundled file.
+
+These logs record earlier successful verification, not a new run made during
+packaging. Public publication has not occurred. Gravity investigations are
+excluded from this verified-fluid note and patch.
